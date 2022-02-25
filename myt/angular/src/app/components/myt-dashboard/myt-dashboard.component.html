@@ -1,0 +1,62 @@
+<div class="content" cdkDropListGroup>
+  <div class="container-fluid">
+
+    <div class="row">
+
+      <div class="col-xl-12 col-lg-12">
+        <div class="card">
+
+          <div class="card-header">
+            <div class="input-group no-border">
+              <input type="text" [(ngModel)]="characterName" class="form-control" placeholder="캐릭명...">
+              <button matRipple [matRippleColor]="rippleColor" type="button"
+                      (click)="addMyt()" class="btn btn-default btn-round btn-just-icon">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <div class="badge-wrapper">
+
+              <div cdkDropList id="myt-source-list" class="myt-list"
+                   cdkDropListSortingDisabled
+                   [cdkDropListData]="myts" (cdkDropListDropped)="onDropSource($event)">
+                <myt *ngFor="let myt of myts" [myt]="myt" cdkDrag></myt>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <ngx-masonry [options]="ngxMasonryOptions" class="row-cards">
+
+      <div ngxMasonryItem class="masonry-item">
+        <div class="add-card">
+          <div cdkDropList id="myt-add-card" class="myt-list"
+               cdkDropListSortingDisabled
+               [cdkDropListData]="temporaryMyts" (cdkDropListDropped)="onDropAdd($event)">
+            <mat-icon class="add-icon">note_add</mat-icon>
+          </div>
+        </div>
+      </div>
+
+      <div *ngFor="let mytCard of mytCards" ngxMasonryItem class="masonry-item">
+        <myt-card class="myt-card" (mytOnDrop)="onDropCard($event)" [mytCard]="mytCard"></myt-card>
+        <button class="btn btn-default btn-round btn-just-icon delete-card-btn"
+          (click)="deleteCardOnClick(mytCard)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+    </ngx-masonry>
+
+  </div>
+</div>
+
+
+

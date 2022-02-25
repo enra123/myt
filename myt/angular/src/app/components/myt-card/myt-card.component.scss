@@ -1,0 +1,112 @@
+.myt-list {
+  min-height: 55px;
+  justify-content: center;
+}
+
+.card.card-chart {
+  overflow: inherit;
+  margin-bottom: 10px;
+
+  .card-header {
+    margin: 5px 0.8em 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .card-body {
+    text-align: center;
+    padding-left: 0.7em;
+    padding-right: 0.7em;
+  }
+
+  .card-footer {
+    padding: 0.7em;
+  }
+
+  .card-footer .stats {
+    width: 100%;
+  }
+
+  .card-options {
+    text-align: right;
+    flex: 44% 0 102;
+    margin-top: 5px;
+  }
+
+  ::ng-deep {
+    .mat-form-field {
+      margin-bottom: 0.6em;
+
+    }
+
+    .mat-form-field-infix {
+      width: auto;
+    }
+
+    .mat-button-toggle-label-content {
+      padding: 0 0.7em;
+    }
+  }
+
+}
+
+.legion-icon {
+  flex: 100px 0 0;
+  height: 100px;
+  margin-top: -0.7em;
+  background-image: url("../../../assets/images/legions.png");
+  background-position: -6% 11%;
+  background-size: 400%;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+
+  &.valtan {
+    background-position: 105% 11%;
+  }
+
+  &.vykas {
+    background-position: 83% 11%;
+  }
+
+  &.kakul-saydon {
+    background-position: -6% 11%;
+  }
+
+  &.brelshaza {
+    background-position: 61% 11%;
+  }
+
+  &.akkan {
+    background-position: 17% 11%;
+  }
+
+  &.thaemine {
+    background-position: 39% 11%;
+  }
+
+  mat-icon {
+    padding-top: 42%;
+    height: 100%;
+    text-shadow: 1px 2px black;
+
+    &:hover {
+      cursor: pointer;
+      transform: translateY(1px)
+    }
+  }
+
+  mat-icon:first-child {
+    margin-left: -0.2em;
+    float: left;
+  }
+  mat-icon:last-child {
+    margin-right: -0.2em;
+    float: right;
+  }
+}
+
+
+
+
+

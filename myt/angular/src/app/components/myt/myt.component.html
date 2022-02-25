@@ -1,0 +1,11 @@
+<div class="badge" [ngClass]="[size, myt.color]">
+  <div class="badge-bg" [ngClass]="getClassNameFromRoleKR()">
+  </div>
+  <div class="badge-content">
+    <div class="badge-content__top">{{ myt.level }}</div>
+    <div class="badge-content__bottom">{{ myt.role }}</div>
+    <div class="badge-content__belt">
+      <span>{{ myt.character }}</span>
+    </div>
+  </div>
+</div>

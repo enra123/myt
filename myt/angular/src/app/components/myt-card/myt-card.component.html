@@ -1,0 +1,53 @@
+<div class="card card-chart">
+  <div class="card-header card-header-icon">
+    <div class="card-icon legion-icon" [ngClass]="mytCard.legion">
+      <mat-icon (click)="showPrevLegion()">navigate_before</mat-icon>
+      <mat-icon (click)="showNextLegion()">navigate_next</mat-icon>
+    </div>
+
+    <div class="card-options">
+      <mat-form-field appearance="fill">
+        <mat-select [(value)]="mytCard.day" (selectionChange)="dayOnChange($event)">
+          <mat-option *ngFor="let day of days" [value]="day">
+            {{ day }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-button-toggle-group [(ngModel)]="mytCard.difficulty" (change)="difficultyOnChange($event)">
+        <mat-button-toggle value="노">노</mat-button-toggle>
+        <mat-button-toggle value="하">하</mat-button-toggle>
+        <mat-button-toggle value="헬">헬</mat-button-toggle>
+      </mat-button-toggle-group>
+      <!--<mat-icon>note_add</mat-icon>-->
+    </div>
+  </div>
+
+  <div class="card-body">
+
+    <div cdkDropList [id]="mytCard.name" class="myt-list"
+         cdkDropListSortingDisabled
+         [cdkDropListData]="mytCard.myts" (cdkDropListDropped)="onDrop($event)">
+      <myt *ngFor="let myt of mytCard.myts" [myt]="myt" [size]="'mini'" cdkDrag></myt>
+    </div>
+
+    <!--<myt *ngFor="let myt of ttt" [myt]="myt" [size]="'mini'"></myt>-->
+  </div>
+
+  <div class="card-footer">
+    <div class="stats">
+      <nz-slider
+        class="nz-time-slider"
+        nzRange
+        [nzStep]="1"
+        [(ngModel)]="mytCard.times"
+        [nzTooltipVisible]="'default'"
+        [nzTipFormatter]="formatLabel"
+        [nzMarks]="marks"
+        [nzMin]="12"
+        [nzMax]="24"
+        (nzOnAfterChange)="sliderOnChange($event)"
+      ></nz-slider>
+    </div>
+  </div>
+</div>

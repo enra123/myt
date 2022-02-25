@@ -1,0 +1,280 @@
+@mixin margin-auto {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.badge {
+  cursor: grab;
+  position: relative;
+  text-align: center;
+  margin: 1.5em 0.5em;
+  width: 4em;
+  height: 6.2em;
+  border-radius: 10px;
+  display: inline-block;
+  top: 0;
+  transition: all 0.2s ease;
+  &:before,
+  &:after {
+    position: absolute;
+    width: inherit;
+    height: inherit;
+    border-radius: inherit;
+    background: inherit;
+    content: "";
+    @include margin-auto;
+  }
+  &:before {
+    transform: rotate(60deg);
+  }
+  &:after {
+    transform: rotate(-60deg);
+  }
+  &:hover {
+    top: -8px;
+    margin-right: 2.5em;
+  }
+
+  &.yellow {
+    background: linear-gradient(60deg, #ffeb3b, #fbc02d);
+    color: #ffb300;
+  }
+
+  &.orange {
+    background: linear-gradient(60deg, #f5700c, #ff9800);
+    color: #f68401;
+  }
+
+  &.pink {
+    background: linear-gradient(60deg, #F48FB1, #d81b60);
+    color: #dc306f;
+  }
+
+  &.red {
+    background: linear-gradient(60deg, #d22824, #da3a36);
+    color: #c62828;
+  }
+
+  &.purple {
+    background: linear-gradient(60deg, #7b1fa2, #913f9e);
+    color: #7127a8;
+  }
+
+  &.teal {
+    background: linear-gradient(60deg, #029eb1, #25b1c3);
+    color: #34a297;
+  }
+
+  &.blue {
+    background: linear-gradient(60deg, #029eb1, #25b1c3);
+    color: #259af3;
+  }
+
+  &.blue-dark {
+    background: linear-gradient(60deg, #1976D2, #283593);
+    color: #1c68c5;
+  }
+
+  &.green {
+    background: linear-gradient(60deg, #cddc39, #8bc34a);
+    color: #7cb342;
+  }
+
+  &.green-dark {
+    background: linear-gradient(60deg, #288c6c, #4ea752);
+    color: #00944a;
+  }
+
+  &.silver {
+    background: linear-gradient(60deg, #E0E0E0, #BDBDBD);
+    color: #9e9e9e;
+  }
+
+  &.gold {
+    background: linear-gradient(60deg, #e6ce6a, #b7892b);
+    color: #b7892b;
+  }
+
+  .badge-bg {
+    height: 50px;
+    position: absolute;
+    z-index: 10;
+    opacity: 0.6;
+    border-radius: 50%;
+    @include margin-auto;
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    &.arcana {
+      background-image: url("../../../assets/icons/arcana.png");
+    }
+    &.bard {
+      background-image: url("../../../assets/icons/bard.png");
+    }
+    &.battle-master {
+      background-image: url("../../../assets/icons/battle-master.png");
+    }
+    &.berserker {
+      background-image: url("../../../assets/icons/berserker.png");
+    }
+    &.blade {
+      background-image: url("../../../assets/icons/blade.png");
+    }
+    &.blaster {
+      background-image: url("../../../assets/icons/blaster.png");
+    }
+    &.brush {
+      background-image: url("../../../assets/icons/brush.png");
+    }
+    &.demon-hunter {
+      background-image: url("../../../assets/icons/demon-hunter.png");
+    }
+    &.demonic {
+      background-image: url("../../../assets/icons/demonic.png");
+    }
+    &.destroyer {
+      background-image: url("../../../assets/icons/destroyer.png");
+    }
+    &.gunsl {
+      background-image: url("../../../assets/icons/gunsl.png");
+    }
+    &.hawk-eye {
+      background-image: url("../../../assets/icons/hawk-eye.png");
+    }
+    &.in-fighter {
+      background-image: url("../../../assets/icons/in-fighter.png");
+    }
+    &.lancer {
+      background-image: url("../../../assets/icons/lancer.png");
+    }
+    &.paladin {
+      background-image: url("../../../assets/icons/paladin.png");
+    }
+    &.reaper {
+      background-image: url("../../../assets/icons/reaper.png");
+    }
+    &.scouter {
+      background-image: url("../../../assets/icons/scouter.png");
+    }
+    &.sorceress {
+      background-image: url("../../../assets/icons/sorceress.png");
+    }
+    &.soul-fist {
+      background-image: url("../../../assets/icons/soul-fist.png");
+    }
+    &.striker {
+      background-image: url("../../../assets/icons/striker.png");
+    }
+    &.summoner {
+      background-image: url("../../../assets/icons/summoner.png");
+    }
+    &.warlord {
+      background-image: url("../../../assets/icons/warlord.png");
+    }
+  }
+
+  .badge-content {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    height: 100%;
+    position: absolute;
+    z-index: 10;
+    inset: 0px;
+    margin: 0px auto;
+    width: 42px;
+    text-shadow: rgb(13 13 13) 0px 2px 0px;
+
+    &__top {
+      margin-left: -2px;
+      margin-top: 3px;
+      color: #fff;
+      font-size: 1.2em;
+    }
+
+    &__bottom {
+      font-size: 1em;
+      margin-bottom: 27px;
+      opacity: 0.5;
+      font-weight: bold;
+      height: 14px;
+      overflow: hidden;
+      text-shadow: #0d0d0d 0px 1px 0px;
+    }
+
+    &__belt {
+      position: absolute;
+      border-radius: 4px;
+      padding: 2px 4px 2px;
+      overflow: hidden;
+      color: #fff;
+      width: 81px;
+      z-index: 11;
+      bottom: 50%;
+      left: 50%;
+      margin-left: -42px;
+      margin-bottom: -30px;
+      height: 20px;
+      font-size: 1.1em;
+      box-shadow: 0 1px 2px rgb(0 0 0 / 27%);
+      background-image: linear-gradient(to right bottom, rgb(73, 76, 77) 0%, rgb(49, 51, 51) 100%);
+      cursor: default;
+
+      span {
+        display: inline-block;
+        vertical-align: middle;
+        width: 92%;
+        white-space: pre-wrap;
+      }
+    }
+  }
+}
+
+.badge.mini {
+  width: 3.4em;
+  height: 5em;
+  margin: 0em 1.2em;
+
+  &:hover {
+    top: -6px;
+  }
+
+  .badge-bg {
+    height: 44px;
+    top: 20px;
+    opacity: 0.3;
+    filter: invert(1);
+  }
+
+  .badge-content {
+    &__top {
+      margin-left: -8px;
+    }
+    &__bottom {
+      display: none;
+      margin-bottom: 1px;
+      margin-left: -2px;
+      width: 94%;
+      text-shadow: none;
+    }
+    &__belt {
+      width: 62px;
+      height: 25px;
+      margin-left: -35px;
+      margin-bottom: -14px;
+      background: none;
+      box-shadow: none;
+      font-weight: bold;
+    }
+  }
+
+}
+
+
+
+
+
+
