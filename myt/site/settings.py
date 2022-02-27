@@ -25,10 +25,11 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = 'django-insecure-etu4zwvejd=bne+wwr06%lo_u-+!%i_@!(4+5#cj&63!uw^z%*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
-    ".ap-southeast-1.compute.amazonaws.com"
+    ".ap-southeast-1.compute.amazonaws.com",
+    "127.0.0.1"
 ]
 
 
@@ -139,9 +140,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+STATIC_ROOT = os.path.join(PROJECT_ROOT, '../static')
 STATICFILES_DIRS = (
-    os.path.join(PROJECT_ROOT, 'static'),
+    os.path.join(PROJECT_ROOT, 'media'),
 )
 
 # Default primary key field type
