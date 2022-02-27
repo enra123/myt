@@ -1,0 +1,14 @@
+[Unit]
+Description=Daphne Service
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/srv/myt
+Restart=always
+
+ExecStart=ExecStart=/home/ubuntu/myvenv/bin/daphne -p 9001 /srv/myt/myt.site.asgi:application
+
+[Install]
+WantedBy=multi-user.target
