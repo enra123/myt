@@ -7,19 +7,19 @@
 
     <div class="card-options">
       <mat-form-field appearance="fill">
-        <mat-select [(value)]="mytCard.day" (selectionChange)="dayOnChange($event)">
+        <mat-select [(value)]="mytCard.day" (selectionChange)="dayOnChange()">
           <mat-option *ngFor="let day of days" [value]="day">
             {{ day }}
           </mat-option>
         </mat-select>
       </mat-form-field>
 
-      <mat-button-toggle-group [(ngModel)]="mytCard.difficulty" (change)="difficultyOnChange($event)">
+      <mat-button-toggle-group [(ngModel)]="mytCard.difficulty" (change)="difficultyOnChange()">
         <mat-button-toggle value="노">노</mat-button-toggle>
         <mat-button-toggle value="하">하</mat-button-toggle>
         <mat-button-toggle value="헬">헬</mat-button-toggle>
       </mat-button-toggle-group>
-      <!--<mat-icon>note_add</mat-icon>-->
+
     </div>
   </div>
 
@@ -31,7 +31,6 @@
       <myt *ngFor="let myt of mytCard.myts" [myt]="myt" [size]="'mini'" cdkDrag></myt>
     </div>
 
-    <!--<myt *ngFor="let myt of ttt" [myt]="myt" [size]="'mini'"></myt>-->
   </div>
 
   <div class="card-footer">

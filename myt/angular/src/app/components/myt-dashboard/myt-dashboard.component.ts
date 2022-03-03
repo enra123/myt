@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { NgxMasonryComponent, NgxMasonryOptions } from 'ngx-masonry';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { DataService } from "../../services/data.service";
 import { Myt, MytCard, MytMessage } from "../../models/myt.models";
@@ -27,15 +28,19 @@ export class MytDashboardComponent implements OnInit {
   mytColorMap = new Map<number, string>([])
   ngxMasonryOptions: NgxMasonryOptions = {
     gutter: 0,
-    percentPosition: true
+    percentPosition: true,
   };
+  loading: boolean = false;
+  displayOption: string = 'card';
 
   constructor(private mytService: DataService,
               private mytMessageService: MytMessageService,
-              private dragDropService: DragDropService) {
-    mytMessageService.messages.subscribe(msg => {
-      this.processMytMessage(msg);
-    });
+              private dragDropService: DragDropService,
+              private snackBar: MatSnackBar) {
+    mytMessageService.messages.subscribe(
+        msg => this.processMytMessage(msg),
+        err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
+      );
   }
 
   ngOnInit() {
@@ -56,6 +61,12 @@ export class MytDashboardComponent implements OnInit {
         this.setMytCardNextNum();
       })
     })
+  }
+
+  private reloadMasonryLayout() {
+    if (this.masonry !== undefined) {
+      this.masonry.layout();
+    }
   }
 
   private processMytMessage(message: MytMessage) {
@@ -110,12 +121,6 @@ export class MytDashboardComponent implements OnInit {
           break;
         }
       }
-    }
-  }
-
-  private reloadMasonryLayout() {
-    if (this.masonry !== undefined) {
-      this.masonry.layout();
     }
   }
 
@@ -180,6 +185,10 @@ export class MytDashboardComponent implements OnInit {
     })
   }
 
+  openErrorBar(message: string) {
+    this.snackBar.open(message, 'Close');
+  }
+
   onDropCard(event: CdkDragDrop<Myt[]>) {
     const isCopy: boolean = event.previousContainer.id.includes('source');
     const myt = event.previousContainer.data[event.previousIndex];
@@ -222,6 +231,7 @@ export class MytDashboardComponent implements OnInit {
     if (this.myts.some(myt => myt.character === this.characterName)) {
       return;
     }
+    this.loading = true;
     let myt = <Myt>{
       character: this.characterName,
       level: 0,
@@ -230,8 +240,9 @@ export class MytDashboardComponent implements OnInit {
       color: '',
     }
     this.mytService.addMyts(myt)
-      .subscribe(
-        (myt: Myt) => {
+      .subscribe({
+        next: (myt: Myt) => {
+          this.loading = false;
           this.myts.push(myt);
           this.setMytColor(myt);
           this.mytMessageService.sendMessage(<MytMessage>{
@@ -240,8 +251,13 @@ export class MytDashboardComponent implements OnInit {
             target: 'myts',
             value: myt
           });
-        }
-      );
+        },
+        error: () => {
+          this.loading = false;
+          this.openErrorBar('캐릭 못찾음');
+        },
+        complete: () => this.loading = false
+      });
   }
 
   deleteCardOnClick(mytCard: MytCard): void {

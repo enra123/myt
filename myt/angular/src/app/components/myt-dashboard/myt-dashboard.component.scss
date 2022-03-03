@@ -38,6 +38,16 @@
   }
 }
 
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 12;
+  backdrop-filter: blur(2px);
+}
+
 .btn.btn-just-icon.delete-card-btn  {
   margin: 0;
   top: -5px;
@@ -52,6 +62,17 @@
   }
 }
 
+.myt-accordion {
+  .accord-item {
+    display: block;
+  }
+}
+
+.display-toggle {
+  margin-top: -15px;
+  margin-bottom: 15px;
+  text-align: right;
+}
 
 @media screen and (min-width: 576px) {
   .masonry-item { width: 50%; }

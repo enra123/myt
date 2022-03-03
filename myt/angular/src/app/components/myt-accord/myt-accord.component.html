@@ -1,0 +1,66 @@
+<div class="accord-item-header" (click)="accordionItem.toggle()">
+  <div class="accord-item-header-legion legion-bg" [ngClass]="mytCard.legion">
+    <div class="overlay"></div>
+    <div class="description">
+      <p>{{ mytCard.legion }}</p>
+      <span>{{ mytCard.difficulty }}</span>
+    </div>
+  </div>
+  <div class="accord-item-header-day">
+    <div>{{ mytCard.day }}</div>
+    <div>{{ (mytCard.times[0] - 12) }}pm</div>
+  </div>
+  <div class="accord-item-header-myts">
+    <div cdkDropList [id]="mytCard.name" class="myt-list"
+         cdkDropListSortingDisabled
+         [cdkDropListData]="mytCard.myts" (cdkDropListDropped)="onDrop($event)">
+      <myt *ngFor="let myt of mytCard.myts" [myt]="myt" [size]="'mini'" cdkDrag></myt>
+    </div>
+  </div>
+  <div class="accord-item-header-toggle">
+    <mat-icon *ngIf="!accordionItem.expanded">keyboard_arrow_down</mat-icon>
+    <mat-icon *ngIf="accordionItem.expanded">keyboard_arrow_up</mat-icon>
+  </div>
+</div>
+<div
+  class="accord-item-body"
+  role="region"
+  [style.display]="accordionItem.expanded ? '' : 'none'"
+  [attr.id]="'accordion-body-' + index"
+  [attr.aria-labelledby]="'accordion-header-' + index">
+  <mat-form-field appearance="fill">
+    <mat-select [(value)]="mytCard.day" (selectionChange)="dayOnChange()">
+      <mat-option *ngFor="let day of days" [value]="day">
+        {{ day }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-select [(value)]="mytCard.legion" (selectionChange)="legionOnChange()">
+      <mat-option *ngFor="let legion of legions" [value]="legion">
+        {{ legion }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-select [(value)]="mytCard.difficulty" (selectionChange)="difficultyOnChange()">
+      <mat-option *ngFor="let difficulty of difficulties" [value]="difficulty">
+        {{ difficulty }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <div class="slider-wrapper">
+    <nz-slider
+      class="nz-time-slider"
+      nzRange
+      [nzStep]="1"
+      [(ngModel)]="mytCard.times"
+      [nzTooltipVisible]="'default'"
+      [nzTipFormatter]="formatLabel"
+      [nzMarks]="marks"
+      [nzMin]="12"
+      [nzMax]="24"
+      (nzOnAfterChange)="sliderOnChange($event)"
+    ></nz-slider>
+  </div>
+</div>

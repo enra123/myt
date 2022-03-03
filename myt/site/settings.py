@@ -29,7 +29,6 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     ".ap-southeast-1.compute.amazonaws.com",
-    "127.0.0.1"
 ]
 
 
@@ -39,13 +38,14 @@ INSTALLED_APPS = [
     'channels',
     'django.contrib.admin',
     'django.contrib.auth',
+    'django_crontab',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
-    'myt.home.apps.MytConfig',
     'rest_framework',
+    'myt',
 ]
 
 MIDDLEWARE = [
@@ -120,6 +120,29 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+CRONJOBS = [
+    ('10 8 * * *', 'myt.home.cron.update_myts_info')
+]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'debug.log',
+        },
+    },
+    'loggers': {
+        'myt.home': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
 
 
 # Internationalization

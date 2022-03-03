@@ -17,6 +17,10 @@
           </div>
 
           <div class="card-footer">
+            <ng-container *ngIf="loading">
+              <div class="overlay"></div>
+              <mat-spinner></mat-spinner>
+            </ng-container>
             <div class="badge-wrapper">
 
               <div cdkDropList id="myt-source-list" class="myt-list"
@@ -33,7 +37,37 @@
 
     </div>
 
-    <ngx-masonry [options]="ngxMasonryOptions" class="row-cards">
+    <div class="display-toggle">
+      <mat-button-toggle-group [(ngModel)]="displayOption">
+        <mat-button-toggle value="card">
+          <mat-icon>view_module</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle value="accord">
+          <mat-icon>view_headline</mat-icon>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    <cdk-accordion class="myt-accordion" [hidden]="displayOption=='card'">
+      <cdk-accordion-item
+        *ngFor="let mytCard of mytCards; let index = index;"
+        #accordionItem="cdkAccordionItem"
+        class="accord-item"
+        role="button"
+        tabindex="0"
+        [attr.id]="'accordion-header-' + index"
+        [attr.aria-expanded]="accordionItem.expanded"
+        [attr.aria-controls]="'accordion-body-' + index">
+        <myt-accord
+          (mytOnDrop)="onDropCard($event)"
+          [mytCard]="mytCard"
+          [accordionItem]="accordionItem"
+          [index]="index">
+        </myt-accord>
+      </cdk-accordion-item>
+    </cdk-accordion>
+
+    <ngx-masonry [options]="ngxMasonryOptions" class="row-cards" [hidden]="displayOption=='accord'">
 
       <div ngxMasonryItem class="masonry-item">
         <div class="add-card">

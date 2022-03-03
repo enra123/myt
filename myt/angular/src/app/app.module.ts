@@ -15,9 +15,14 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatOptionModule } from "@angular/material/core";
 import { MatSliderModule } from "@angular/material/slider";
 import { MatRippleModule } from '@angular/material/core';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NzSliderModule } from 'ng-zorro-antd/slider';
+import { CdkAccordionModule } from '@angular/cdk/accordion';
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { NgxMasonryModule } from 'ngx-masonry';
+import { MytAccordComponent } from './components/myt-accord/myt-accord.component';
 
 
 @NgModule({
@@ -25,7 +30,8 @@ import { NgxMasonryModule } from 'ngx-masonry';
     AppComponent,
     MytComponent,
     MytDashboardComponent,
-    MytCardComponent
+    MytCardComponent,
+    MytAccordComponent
   ],
     imports: [
       BrowserModule,
@@ -38,7 +44,10 @@ import { NgxMasonryModule } from 'ngx-masonry';
       MatSelectModule,
       MatSliderModule,
       MatRippleModule,
+      MatSnackBarModule,
+      MatProgressSpinnerModule,
       MatButtonToggleModule,
+      CdkAccordionModule,
       NzSliderModule,
       DragDropModule,
       NgxMasonryModule

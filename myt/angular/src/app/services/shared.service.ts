@@ -34,7 +34,7 @@ export class MytMessageService {
     this.messages = <Subject<MytMessage>>wsService.connect().pipe(
       // tap(console.log),
       map(response => response.message),
-      catchError(error => { throw error })
+      catchError(err => { throw err })
     );
   }
 

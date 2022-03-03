@@ -1,0 +1,97 @@
+.accord-item-header {
+  display: flex;
+  align-content: center;
+  justify-content: flex-start;
+  align-items: center;
+  color: white;
+}
+
+.accord-item-header {
+  margin: 10px 0px;
+  padding: 10px;
+  border: dashed 1px #8b92a9;
+  border-radius: 4px;
+}
+
+.accord-item-body {
+  padding: 10px;
+
+  .slider-wrapper {
+    padding: 10px 25px;
+  }
+}
+
+.accord-item-header-legion {
+  width: 60px;
+  min-height: 60px;
+  border-radius: 6px;
+  text-align: center;
+  position: relative;
+
+  .overlay {
+    border-radius: 6px;
+    position: absolute;
+    background-color: black;
+    opacity: 0.3;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+  }
+
+  .description {
+    position: relative;
+    color: white;
+    line-height: 1.2em;
+    z-index: 11;
+
+    span {
+      font-weight: bold;
+    }
+  }
+}
+
+.accord-item-header-day {
+  width: 50px;
+  text-align: center;
+}
+
+.accord-item-header-myts {
+  flex: 1;
+}
+
+.accord-item-header-toggle {
+  margin-left: auto;
+  width: 24px;
+}
+
+.legion-bg {
+  background-image: url("../../../assets/images/legions.png");
+  background-position: -6% 11%;
+  background-size: 400%;
+
+  &.valtan {
+    background-position: 105% 11%;
+  }
+
+  &.vykas {
+    background-position: 83% 11%;
+  }
+
+  &.kakul-saydon {
+    background-position: -6% 11%;
+  }
+
+  &.brelshaza {
+    background-position: 61% 11%;
+  }
+
+  &.akkan {
+    background-position: 17% 11%;
+  }
+
+  &.thaemine {
+    background-position: 39% 11%;
+  }
+}

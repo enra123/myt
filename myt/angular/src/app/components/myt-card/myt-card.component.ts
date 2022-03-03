@@ -16,6 +16,7 @@ import { MatButtonToggleChange } from "@angular/material/button-toggle";
 export class MytCardComponent implements OnInit {
   @Output() mytOnDrop = new EventEmitter();
   @Input() mytCard: MytCard;
+  private sliderTextColor: string = '#8b92a9';
   legions: string[] = ['kakul-saydon', 'akkan', 'thaemine', 'brelshaza', 'vykas', 'valtan'];
   legionIndexSelected: number = 0;
   days: string[] = ['수', '목', '금', '토', '일', '월', '화']
@@ -48,23 +49,23 @@ export class MytCardComponent implements OnInit {
     this.mytOnDrop.emit(event);
   }
 
-  private setTimeSliderMarksDefault() {
+  protected setTimeSliderMarksDefault() {
     this.marks = {
       12: {
         style: {
-          color: '#8b92a9'
+          color: this.sliderTextColor
         },
         label: '12pm'
       },
       18: {
         style: {
-          color: '#8b92a9'
+          color: this.sliderTextColor
         },
         label: '6pm'
       },
       24: {
         style: {
-          color: '#8b92a9'
+          color: this.sliderTextColor
         },
         label: '12am'
       }
@@ -75,12 +76,21 @@ export class MytCardComponent implements OnInit {
       }
       this.marks[i] = {
         style: {
-          color: '#8b92a9',
+          color: this.sliderTextColor,
           fontSize: '0.8em'
         },
         label: (i - 12).toString()
       };
     }
+  }
+
+  protected cardValueOnChange(target: string, value: any) {
+    this.mytMessageService.sendMessage(<MytMessage>{
+      name: this.mytCard.name,
+      action: 'edit',
+      target: target,
+      value: value
+    })
   }
 
   formatLabel(value: number) {
@@ -93,12 +103,7 @@ export class MytCardComponent implements OnInit {
       this.legionIndexSelected = this.legions.length - 1;
     }
     this.mytCard.legion = this.legions[this.legionIndexSelected];
-    this.mytMessageService.sendMessage(<MytMessage>{
-      name: this.mytCard.name,
-      action: 'edit',
-      target: 'legion',
-      value: this.mytCard.legion
-    })
+    this.cardValueOnChange('legion', this.mytCard.legion);
   }
 
   showNextLegion(): void {
@@ -107,41 +112,21 @@ export class MytCardComponent implements OnInit {
       this.legionIndexSelected = 0;
     }
     this.mytCard.legion = this.legions[this.legionIndexSelected];
-    this.mytMessageService.sendMessage(<MytMessage>{
-      name: this.mytCard.name,
-      action: 'edit',
-      target: 'legion',
-      value: this.mytCard.legion
-    })
+    this.cardValueOnChange('legion', this.mytCard.legion);
   }
 
-  dayOnChange(event: MatSelectChange) {
-    this.mytMessageService.sendMessage(<MytMessage>{
-      name: this.mytCard.name,
-      action: 'edit',
-      target: 'day',
-      value: this.mytCard.day
-    })
+  dayOnChange() {
+    this.cardValueOnChange('day', this.mytCard.day);
   }
 
-  difficultyOnChange(event: MatButtonToggleChange) {
-    this.mytMessageService.sendMessage(<MytMessage>{
-      name: this.mytCard.name,
-      action: 'edit',
-      target: 'difficulty',
-      value: this.mytCard.difficulty
-    })
+  difficultyOnChange() {
+    this.cardValueOnChange('difficulty', this.mytCard.difficulty);
   }
 
   sliderOnChange(value: number[] | number): void {
     if (typeof(value) === 'number') {
       return;
     }
-    this.mytMessageService.sendMessage(<MytMessage>{
-      name: this.mytCard.name,
-      action: 'edit',
-      target: 'times',
-      value: this.mytCard.times
-    })
+    this.cardValueOnChange('times', this.mytCard.times);
   }
 }

@@ -89,6 +89,12 @@ TODO: clean and tidy up if it's still being used
   }
 }
 
+.myt-list {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
 /*
 overriding external module styles etc. material, cdk
  */
@@ -174,14 +180,48 @@ overriding external module styles etc. material, cdk
   }
 }
 
-.myt-list {
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
+.mat-progress-spinner {
+  position: absolute !important;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 13;
 }
 
-.cdk-drag-preview {
+.mat-progress-spinner circle {
+  stroke: #8b92a9;
+}
 
+.cdk-global-overlay-wrapper {
+  display: flex;
+  position: absolute;
+  z-index: 1000;
+  pointer-events: none;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.cdk-overlay-pane {
+  position: absolute;
+  pointer-events: auto;
+  box-sizing: border-box;
+  z-index: 1000;
+  display: flex;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.mat-snack-bar-container {
+  color: #ffffffb3;
+  background: #323232;
+  box-shadow: 0 3px 5px -1px #0003, 0 6px 10px #00000024, 0 1px 18px #0000001f;
+}
+
+.mat-simple-snackbar-action button {
+  background: transparent;
+  color: #ff4081;
 }
 
 .cdk-drag-placeholder {

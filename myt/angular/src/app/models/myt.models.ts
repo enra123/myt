@@ -16,9 +16,9 @@ export interface MytCard {
 }
 
 export interface MytMessage {
-  name: string; // source, card-id-*
-  action: string; // delete, add, edit
-  target: string; // legion, day, time, myts, etc.
+  name: string;
+  action: string;
+  target: string;
   value: any;
 }
 
