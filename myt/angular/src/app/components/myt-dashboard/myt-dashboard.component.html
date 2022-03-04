@@ -7,13 +7,14 @@
         <div class="card">
 
           <div class="card-header">
-            <div class="input-group no-border">
-              <input type="text" [(ngModel)]="characterName" class="form-control" placeholder="캐릭명...">
-              <button matRipple [matRippleColor]="rippleColor" type="button"
-                      (click)="addMyt()" class="btn btn-default btn-round btn-just-icon">
+            <form class="input-group no-border" (ngSubmit)="addMyt()">
+              <input type="text" [(ngModel)]="characterName" name="cname"
+                     class="form-control" placeholder="캐릭명...">
+              <button matRipple [matRippleColor]="rippleColor" type="submit"
+                      class="btn btn-default btn-round btn-just-icon">
                 <mat-icon>add</mat-icon>
               </button>
-            </div>
+            </form>
           </div>
 
           <div class="card-footer">
