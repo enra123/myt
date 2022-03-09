@@ -8,10 +8,10 @@
   </div>
   <div class="accord-item-header-day">
     <div>{{ mytCard.day }}</div>
-    <div>{{ (mytCard.times[0] - 12) }}pm</div>
+    <div>{{ (mytCard.times[0]) }}:00</div>
   </div>
   <div class="accord-item-header-myts">
-    <div cdkDropList [id]="mytCard.name" class="myt-list"
+    <div cdkDropList [id]="'accord-'+mytCard.name" class="myt-list"
          cdkDropListSortingDisabled
          [cdkDropListData]="mytCard.myts" (cdkDropListDropped)="onDrop($event)">
       <myt *ngFor="let myt of mytCard.myts" [myt]="myt" [size]="'mini'" cdkDrag></myt>

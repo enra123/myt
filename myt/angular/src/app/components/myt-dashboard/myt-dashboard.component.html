@@ -39,7 +39,7 @@
     </div>
 
     <div class="display-toggle">
-      <mat-button-toggle-group [(ngModel)]="displayOption">
+      <mat-button-toggle-group [(ngModel)]="displayOption" (change)="reloadMasonryLayout()">
         <mat-button-toggle value="card">
           <mat-icon>view_module</mat-icon>
         </mat-button-toggle>
@@ -72,6 +72,10 @@
 
       <div ngxMasonryItem class="masonry-item">
         <div class="add-card">
+          <ng-container *ngIf="loadingNewCard">
+            <div class="overlay"></div>
+            <mat-spinner></mat-spinner>
+          </ng-container>
           <div cdkDropList id="myt-add-card" class="myt-list"
                cdkDropListSortingDisabled
                [cdkDropListData]="temporaryMyts" (cdkDropListDropped)="onDropAdd($event)">

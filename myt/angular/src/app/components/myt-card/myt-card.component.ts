@@ -5,8 +5,6 @@ import { NzMarks } from 'ng-zorro-antd/slider';
 import { Myt, MytCard, MytMessage } from "../../models/myt.models";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import { MytMessageService } from '../../services/shared.service';
-import { MatSelectChange } from "@angular/material/select";
-import { MatButtonToggleChange } from "@angular/material/button-toggle";
 
 @Component({
   selector: 'myt-card',
@@ -30,12 +28,19 @@ export class MytCardComponent implements OnInit {
   }
 
   onDrop(event: CdkDragDrop<Myt[]>) {
-    const droppedMyt = event.previousContainer.data[event.previousIndex];
+    // TODO: fix dirty work around with drag-drop item(element is correct) index(but previousIndex is wrong) bug(?).
+    const droppedMytText = event.item.element.nativeElement.innerText.split('\n').pop();
+    const droppedMyt = event.previousContainer.data.find(d => {
+      return d.character === droppedMytText
+    });
+    if (droppedMyt === undefined) {
+      throw new TypeError();
+    }
     // delete out of drop zone myt
     if (event.previousContainer.id === event.container.id && !event.isPointerOverContainer) {
       this.mytCard.myts = this.mytCard.myts.filter(myt => myt.character !== droppedMyt.character);
       this.mytMessageService.sendMessage(<MytMessage>{
-        name: event.previousContainer.id,
+        name: this.mytCard.name,
         action: 'delete',
         target: 'myts',
         value: droppedMyt

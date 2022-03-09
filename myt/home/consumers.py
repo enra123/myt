@@ -8,6 +8,7 @@ from myt.home.utils import process_message_for_db
 
 logger = logging.getLogger(__name__)
 
+
 class MytConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.group_name = self.scope['url_route']['kwargs']['group_name']
@@ -31,6 +32,11 @@ class MytConsumer(AsyncWebsocketConsumer):
         logger.info(text_data)
         message = json.loads(text_data)
 
+        try:
+            await database_sync_to_async(process_message_for_db)(message)
+        except Exception as e:
+            logger.info(e)
+
         # Send message to room group
         await self.channel_layer.group_send(
             self.group_name,
@@ -41,19 +47,8 @@ class MytConsumer(AsyncWebsocketConsumer):
             }
         )
 
-        try:
-            await database_sync_to_async(process_message_for_db)(message)
-        except Exception as e:
-            logger.info(e)
-
     # Send message to WebSocket
     async def myt_message(self, event):
         message = event['message']
 
-        # Send to everyone else than the sender
-        if self.channel_name != event['sender_channel_name']:
-            await self.send(text_data=json.dumps({
-                'message': message
-            }))
-
-
+        await self.send(text_data=json.dumps({'message': message}))

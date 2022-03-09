@@ -15,7 +15,6 @@ class Myt(models.Model):
 
 
 class MytCard(models.Model):
-    name = models.CharField(max_length=50)
     legion = models.CharField(max_length=50)
     day = models.CharField(max_length=10)
     difficulty = models.CharField(max_length=10)
@@ -23,5 +22,7 @@ class MytCard(models.Model):
     myts = models.ManyToManyField(Myt, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-
+    @property
+    def name(self):
+        return f'myt-card-list-{self.id}'
 

@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import {CdkDragDrop, copyArrayItem, transferArrayItem} from '@angular/cdk/drag-drop';
 import { NgxMasonryComponent, NgxMasonryOptions } from 'ngx-masonry';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { DataService } from "../../services/data.service";
 import { Myt, MytCard, MytMessage } from "../../models/myt.models";
-import { DragDropService, MytMessageService } from '../../services/shared.service';
+import { MytMessageService } from '../../services/shared.service';
 import { map, switchMap } from "rxjs/operators";
 
 @Component({
@@ -14,13 +14,12 @@ import { map, switchMap } from "rxjs/operators";
   styleUrls: ['./myt-dashboard.component.scss']
 })
 export class MytDashboardComponent implements OnInit {
-  private MYTCARDIDPREFIX: string = 'myt-card-list-';
   @ViewChild(NgxMasonryComponent) masonry: NgxMasonryComponent | undefined;
   rippleColor: string = '#aeb1bb';
   myts: Myt[] = [];
-  temporaryMyts: Myt[] = [];
+  temporaryMyts: Myt[] = [];  // for adding a new card
+  loadingNewCard: boolean = false;  // for adding a new card
   mytCards: MytCard[] = [];
-  mytCardNextNum: number = 1;
   characterName: string = '';
   colors: string[] = ['gold', 'orange', 'green-dark', 'pink',
     'red', 'teal', 'blue-dark', 'purple']
@@ -35,7 +34,6 @@ export class MytDashboardComponent implements OnInit {
 
   constructor(private mytService: DataService,
               private mytMessageService: MytMessageService,
-              private dragDropService: DragDropService,
               private snackBar: MatSnackBar) {
     mytMessageService.messages.subscribe(
         msg => this.processMytMessage(msg),
@@ -58,15 +56,8 @@ export class MytDashboardComponent implements OnInit {
       this.mytCards = mytCards
       this.mytCards.forEach((mytCard) => {
         this.setMytsColors(mytCard.myts);
-        this.setMytCardNextNum();
       })
     })
-  }
-
-  private reloadMasonryLayout() {
-    if (this.masonry !== undefined) {
-      this.masonry.layout();
-    }
   }
 
   private processMytMessage(message: MytMessage) {
@@ -76,10 +67,19 @@ export class MytDashboardComponent implements OnInit {
       if (message.action === 'add') {
         if (message.target === 'myts') {
           const myt = message.value;
+          if (this.myts.findIndex((m => m.character === myt.character)) > -1) {
+            return;
+          }
           this.setMytColor(myt);
           this.myts.push(myt);
         } else if (message.target === 'mytCards') {
-          this.addMytCard(message.value);
+          const mytCard = message.value;
+          if (this.mytCards.findIndex((m => m.name === mytCard.name)) > -1) {
+            return;
+          }
+          this.mytCards.unshift(mytCard);
+          this.loadingNewCard = false;
+          this.reloadMasonryLayout();
         }
       } else if (message.action === 'delete') {
         this.deleteCardByName(message.value);
@@ -93,7 +93,9 @@ export class MytDashboardComponent implements OnInit {
       switch (message.target) {
         case 'myts': {
           if (message.action === 'add') {
-            mytCard.myts.push(message.value);
+            if (!mytCard.myts.some(myt => myt.character === message.value.character)) {
+              mytCard.myts.push(message.value);
+            }
           } else if (message.action === 'delete') {
             mytCard.myts = mytCard.myts.filter(
               myt => myt.character != message.value.character
@@ -124,9 +126,9 @@ export class MytDashboardComponent implements OnInit {
     }
   }
 
-  private getMytCardDefault(cardName: string): MytCard {
+  private getMytCardDefault(): MytCard {
     return <MytCard>{
-      name: cardName,
+      name: 'myt-card-list-0',
       legion: 'kakul-saydon',
       day: '수',
       difficulty: '노',
@@ -135,35 +137,8 @@ export class MytDashboardComponent implements OnInit {
     }
   }
 
-  private addMytCard(mytCard?: MytCard) {
-    if (!mytCard) {
-      const cardName = this.MYTCARDIDPREFIX + this.mytCardNextNum;
-      this.mytCardNextNum++;
-      mytCard = this.getMytCardDefault(cardName);
-      this.mytMessageService.sendMessage(<MytMessage>{
-        name: 'source',
-        action: 'add',
-        target: 'mytCards',
-        value: mytCard
-      });
-    }
-
-    this.mytCards.unshift(mytCard);
-    this.reloadMasonryLayout();
-  }
-
   private deleteCardByName(name: string): void {
     this.mytCards = this.mytCards.filter(item => item.name !== name);
-  }
-
-  private setMytCardNextNum() {
-    const cardsLength = this.mytCards.length;
-    if (!cardsLength) {
-      this.mytCardNextNum = 1;
-      return;
-    }
-    const lastCard = this.mytCards[cardsLength - 1];
-    this.mytCardNextNum = Number(lastCard.name.split("-", 4)[3]) + 1;
   }
 
   private setMytColor(myt: Myt): void {
@@ -185,42 +160,88 @@ export class MytDashboardComponent implements OnInit {
     })
   }
 
+  private containerIdToCardName(containerId: string): string {
+    let cardName = containerId;
+    if (containerId.includes('grid-')) {
+      cardName = cardName.replace('grid-', '');
+    } else if (containerId.includes('accord-')) {
+      cardName = cardName.replace('accord-', '');
+    }
+    return cardName;
+  }
+
+  private mytDragDropTransfer(event: CdkDragDrop<Myt[]>, isCopy: boolean) {
+    // TODO: fix dirty work around with drag-drop item(element is correct) index(but previousIndex is wrong) bug(?).
+    const droppedMytText = event.item.element.nativeElement.innerText.split('\n').pop();
+    const previousIndex = event.previousContainer.data.findIndex(d => {
+      return d.character === droppedMytText
+    });
+    let copyOrTransferMethod = isCopy ? copyArrayItem : transferArrayItem;
+    copyOrTransferMethod(event.previousContainer.data,
+      event.container.data,
+      previousIndex,
+      event.currentIndex);
+  }
+
+  reloadMasonryLayout() {
+    if (this.masonry !== undefined) {
+      this.masonry.layout();
+    }
+  }
+
   openErrorBar(message: string) {
     this.snackBar.open(message, 'Close');
   }
 
   onDropCard(event: CdkDragDrop<Myt[]>) {
     const isCopy: boolean = event.previousContainer.id.includes('source');
-    const myt = event.previousContainer.data[event.previousIndex];
-    this.dragDropService.mytDrop(event, isCopy);
+    // TODO: fix dirty work around with drag-drop item(element is correct) index(but previousIndex is wrong) bug(?).
+    const droppedMytText = event.item.element.nativeElement.innerText.split('\n').pop();
+    const droppedMyt = event.previousContainer.data.find(d => {
+      return d.character === droppedMytText
+    });
+    if (droppedMyt === undefined) {
+      throw new TypeError();
+    }
+    this.mytDragDropTransfer(event, isCopy);
 
     if (isCopy) { // Source -> Card
       this.mytMessageService.sendMessage(<MytMessage>{
-        name: event.container.id,
+        name: this.containerIdToCardName(event.container.id),
         action: 'add',
         target: 'myts',
-        value: myt
+        value: droppedMyt
       })
     } else {  // Card -> Card
       this.mytMessageService.sendMessage(<MytMessage>{
-        name: event.container.id,
+        name: this.containerIdToCardName(event.container.id),
         action: 'add',
         target: 'myts',
-        value: myt
+        value: droppedMyt
       })
       this.mytMessageService.sendMessage(<MytMessage>{
-        name: event.previousContainer.id,
+        name: this.containerIdToCardName(event.previousContainer.id),
         action: 'delete',
         target: 'myts',
-        value: myt
+        value: droppedMyt
       })
     }
     this.reloadMasonryLayout();
   }
 
   onDropAdd(event: CdkDragDrop<Myt[]>) {
-    this.dragDropService.mytDrop(event, true);
-    this.addMytCard();
+    if (this.loadingNewCard) {
+      return;
+    }
+    this.mytDragDropTransfer(event, true);
+    this.loadingNewCard = true;
+    const mytCard = this.getMytCardDefault();
+    this.mytMessageService.sendMessage(<MytMessage>{
+      name: 'source',
+      action: 'add',
+      target: 'mytCards',
+      value: mytCard
+    });
   }
 
   onDropSource(event: CdkDragDrop<Myt[]>) {

@@ -65,16 +65,23 @@ def process_message_for_db(message):
 
     if 'source' in name:
         if action == 'delete':
-            MytCard.objects.get(name=value).delete()
+            card_id = int(value.split('-')[-1])
+            MytCard.objects.get(id=card_id).delete()
         elif action == 'add' and target != 'myts':
             myt_characters = [myt['character'] for myt in value.get('myts', [])]
             myts = Myt.objects.filter(character__in=myt_characters)
-            del value['myts']
-            myt_card = MytCard.objects.create(**value)
+            myt_card = MytCard(legion=value['legion'],
+                               day=value['day'],
+                               difficulty=value['difficulty'],
+                               times=value['times'])
+            myt_card.save()
             myt_card.myts.add(*myts)
+            # new card being sent back with newly assigned id
+            value['name'] = myt_card.name
 
     if 'card' in name:
-        myt_card = MytCard.objects.get(name=name)
+        card_id = int(name.split('-')[-1])
+        myt_card = MytCard.objects.get(id=card_id)
         if action == 'add':
             myt_card.myts.add(Myt.objects.get(character=value['character']))
         elif action == 'delete':

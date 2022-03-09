@@ -25,7 +25,7 @@
 
   <div class="card-body">
 
-    <div cdkDropList [id]="mytCard.name" class="myt-list"
+    <div cdkDropList [id]="'grid-'+mytCard.name" class="myt-list"
          cdkDropListSortingDisabled
          [cdkDropListData]="mytCard.myts" (cdkDropListDropped)="onDrop($event)">
       <myt *ngFor="let myt of mytCard.myts" [myt]="myt" [size]="'mini'" cdkDrag></myt>
