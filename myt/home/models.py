@@ -26,3 +26,28 @@ class MytCard(models.Model):
     def name(self):
         return f'myt-card-list-{self.id}'
 
+
+class Room(models.Model):
+    room_name = models.CharField(max_length=20, unique=True)
+    user_count = models.IntegerField(default=0)
+
+    @classmethod
+    def add(cls, room_name):
+        room, created = cls.objects.get_or_create(room_name=room_name)
+        room.user_count += 1
+        room.save()
+        return room.user_count
+
+    @classmethod
+    def users_count(cls, room_name):
+        rooms = cls.objects.filter(room_name=room_name)
+        if rooms.exists():
+            return rooms.first().user_count
+        return 0
+
+    @classmethod
+    def remove(cls, room_name):
+        room = cls.objects.get(room_name=room_name)
+        room.user_count -= 1
+        room.save()
+        return room.user_count

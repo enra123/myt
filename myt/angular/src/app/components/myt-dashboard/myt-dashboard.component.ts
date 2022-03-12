@@ -31,12 +31,18 @@ export class MytDashboardComponent implements OnInit {
   };
   loading: boolean = false;
   displayOption: string = 'card';
+  connectedUserNum: number;
 
   constructor(private mytService: DataService,
               private mytMessageService: MytMessageService,
               private snackBar: MatSnackBar) {
-    mytMessageService.messages.subscribe(
+    mytMessageService.mytMessages.subscribe(
         msg => this.processMytMessage(msg),
+        err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
+      );
+
+    mytMessageService.connectionNumbers.subscribe(
+        msg => this.connectedUserNum = msg,
         err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
       );
   }

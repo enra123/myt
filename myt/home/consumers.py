@@ -5,6 +5,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 
 from myt.home.utils import process_message_for_db
+from myt.home.models import Room
 
 logger = logging.getLogger(__name__)
 
@@ -19,8 +20,26 @@ class MytConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.accept()
+        count = await database_sync_to_async(Room.add)(self.group_name)
+        await self.channel_layer.group_send(
+            self.group_name,
+            {
+                'type': 'ping_message',
+                'message': count,
+                'sender_channel_name': self.channel_name
+            }
+        )
 
     async def disconnect(self, close_code):
+        count = await database_sync_to_async(Room.remove)(self.group_name)
+        await self.channel_layer.group_send(
+            self.group_name,
+            {
+                'type': 'ping_message',
+                'message': count,
+                'sender_channel_name': self.channel_name
+            }
+        )
         # Leave room group
         await self.channel_layer.group_discard(
             self.group_name,
@@ -49,6 +68,12 @@ class MytConsumer(AsyncWebsocketConsumer):
 
     # Send message to WebSocket
     async def myt_message(self, event):
+        message = event['message']
+
+        await self.send(text_data=json.dumps({'message': message}))
+
+    # Send message to WebSocket
+    async def ping_message(self, event):
         message = event['message']
 
         await self.send(text_data=json.dumps({'message': message}))

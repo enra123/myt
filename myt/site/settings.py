@@ -123,7 +123,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 CRONJOBS = [
-    ('10 20 * * *', 'myt.home.cron.update_myts_info')
+    ('10 20 * * *', 'myt.home.cron.update_myts_info'),
+    ('11 20 * * *', 'myt.home.cron.reset_room_user_count')
 ]
 
 LOGGING = {

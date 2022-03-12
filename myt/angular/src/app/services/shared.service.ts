@@ -1,22 +1,30 @@
 import { Injectable } from '@angular/core';
 
 import { Myt, MytMessage } from "../models/myt.models";
-import { Subject } from "rxjs";
+import {Subject, Observable, pipe, iif, of} from "rxjs";
 import { WebSocketService } from "./data.service";
-import { catchError, map } from "rxjs/operators";
+import {catchError, filter, map, switchMap, tap} from "rxjs/operators";
 
 
 @Injectable({
   providedIn: 'root',
 })
 export class MytMessageService {
-  public messages: Subject<MytMessage>;
+  public mytMessages: Observable<MytMessage>;
+  public connectionNumbers: Observable<number>;
 
   constructor(private wsService: WebSocketService) {
-    this.messages = <Subject<MytMessage>>wsService.connect().pipe(
-      // tap(console.log),
+    const messages = wsService.connect().pipe(
       map(response => response.message),
-      catchError(err => { throw err })
+      catchError(err => {throw err})
+    );
+
+    this.mytMessages = messages.pipe(
+      filter(msg => (<MytMessage>msg).name !== undefined)
+    );
+
+    this.connectionNumbers = messages.pipe(
+      filter(msg => typeof msg === 'number')
     );
   }
 

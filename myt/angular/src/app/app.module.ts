@@ -15,7 +15,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatOptionModule } from "@angular/material/core";
 import { MatSliderModule } from "@angular/material/slider";
 import { MatRippleModule } from '@angular/material/core';
-import { MatExpansionModule } from '@angular/material/expansion';
+import { MatBadgeModule } from '@angular/material/badge';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NzSliderModule } from 'ng-zorro-antd/slider';
@@ -47,6 +47,7 @@ import { MytAccordComponent } from './components/myt-accord/myt-accord.component
       MatSnackBarModule,
       MatProgressSpinnerModule,
       MatButtonToggleModule,
+      MatBadgeModule,
       CdkAccordionModule,
       NzSliderModule,
       DragDropModule,

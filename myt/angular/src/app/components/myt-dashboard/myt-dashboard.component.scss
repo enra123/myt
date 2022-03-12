@@ -74,6 +74,47 @@
   text-align: right;
 }
 
+.dashboard-header {
+  text-align: right;
+  margin-bottom: 8px;
+  padding: 0 27px;
+  flex-direction: row-reverse;
+
+  .mat-icon {
+    font-size: 30px;
+    position: relative;
+  }
+
+  ::ng-deep {
+    .mat-badge-content {
+      position: absolute;
+      text-align: center;
+      display: inline-block;
+      border-radius: 50%;
+      transition: transform 200ms ease-in-out;
+      transform: scale(0.6);
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      pointer-events: none;
+      background: #ff4081;
+      color: #fff;
+      width: 22px;
+      height: 22px;
+      line-height: 21px;
+      top: -4px;
+      left: -11px;
+      font-weight: 600;
+      font-size: 12px;
+      font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    .mat-badge-content.mat-badge-active {
+      transform: none;
+    }
+  }
+}
+
 @media screen and (min-width: 576px) {
   .masonry-item { width: 50%; }
   .add-card {

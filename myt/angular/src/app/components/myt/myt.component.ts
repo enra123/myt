@@ -36,7 +36,7 @@ export class MytComponent implements OnInit {
     [ "홀리나이트", 'paladin' ],
     [ "리퍼", 'reaper' ],
     [ "스카우터", 'scouter' ],
-    [ "소서러", 'sorceress' ],
+    [ "소서리스", 'sorceress' ],
     [ "기공사", 'soul-fist' ],
     [ "스트라이커", 'striker' ],
     [ "서머너", 'summoner' ],
