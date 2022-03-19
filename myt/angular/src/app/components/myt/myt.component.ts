@@ -26,7 +26,7 @@ export class MytComponent implements OnInit {
     [ "블레이드", 'blade' ],
     [ "블래스터", 'blaster' ],
     [ "도화가", 'brush'],
-    [ "데몬헌터", 'demon-hunter' ],
+    [ "데빌헌터", 'demon-hunter' ],
     [ "데모닉", 'demonic' ],
     [ "디스트로이어", 'destroyer' ],
     [ "건슬링어", 'gunsl' ],

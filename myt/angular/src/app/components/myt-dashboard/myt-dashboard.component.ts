@@ -1,12 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import {CdkDragDrop, copyArrayItem, transferArrayItem} from '@angular/cdk/drag-drop';
+import { ActivatedRoute } from "@angular/router";
+import { CdkDragDrop, copyArrayItem, transferArrayItem } from '@angular/cdk/drag-drop';
 import { NgxMasonryComponent, NgxMasonryOptions } from 'ngx-masonry';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { DataService } from "../../services/data.service";
 import { Myt, MytCard, MytMessage } from "../../models/myt.models";
 import { MytMessageService } from '../../services/shared.service';
-import { map, switchMap } from "rxjs/operators";
+import { first, switchMap } from "rxjs/operators";
 
 @Component({
   selector: 'myt-dashboard',
@@ -32,19 +33,25 @@ export class MytDashboardComponent implements OnInit {
   loading: boolean = false;
   displayOption: string = 'card';
   connectedUserNum: number;
+  roomName: string;
 
   constructor(private mytService: DataService,
               private mytMessageService: MytMessageService,
-              private snackBar: MatSnackBar) {
-    mytMessageService.mytMessages.subscribe(
-        msg => this.processMytMessage(msg),
-        err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
-      );
+              private snackBar: MatSnackBar,
+              private route: ActivatedRoute) {
+    this.route.params.pipe(first()).subscribe( (params) => {
+      this.roomName = params['roomName'];
+      mytMessageService.connect(this.roomName);
+      mytMessageService.mytMessages.subscribe(
+          msg => this.processMytMessage(msg),
+          err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
+        );
 
-    mytMessageService.connectionNumbers.subscribe(
-        msg => this.connectedUserNum = msg,
-        err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
-      );
+      mytMessageService.connectionNumbers.subscribe(
+          msg => this.connectedUserNum = msg,
+          err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
+        );
+    });
   }
 
   ngOnInit() {
@@ -52,14 +59,14 @@ export class MytDashboardComponent implements OnInit {
   }
 
   private fetchData() {
-    this.mytService.getMyts().pipe(
+    this.mytService.getMyts(this.roomName).pipe(
       switchMap(myts => {
-        this.myts = myts
-        this.setMytsColors(this.myts)
-        return this.mytService.getMytCards()
+        this.myts = myts;
+        this.setMytsColors(this.myts);
+        return this.mytService.getMytCards(this.roomName);
       })
     ).subscribe(mytCards => {
-      this.mytCards = mytCards
+      this.mytCards = mytCards;
       this.mytCards.forEach((mytCard) => {
         this.setMytsColors(mytCard.myts);
       })
@@ -266,7 +273,7 @@ export class MytDashboardComponent implements OnInit {
       role: '',
       color: '',
     }
-    this.mytService.addMyts(myt)
+    this.mytService.addMyts(myt, this.roomName)
       .subscribe({
         next: (myt: Myt) => {
           this.loading = false;

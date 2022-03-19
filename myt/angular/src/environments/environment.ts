@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  wsEndpoint: "ws://127.0.0.1:8000/ws/myt/malang"
+  wsEndpoint: "ws://127.0.0.1:8000/ws/myt/"
 };
 
 /*

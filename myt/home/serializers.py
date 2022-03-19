@@ -1,12 +1,15 @@
 from rest_framework import serializers
-from myt.home.models import Myt, MytCard
+from myt.home.models import Myt, MytCard, Room
 
 
 class MytSerializer(serializers.ModelSerializer):
+    rooms = serializers.SlugRelatedField(queryset=Room.objects.all(),
+                                         many=True, write_only=True,
+                                         slug_field="name")
+
     class Meta:
         model = Myt
-        fields = ('character', 'level', 'account', 'role')
-        # read_only_fields = ('updated_at',)
+        fields = ('character', 'level', 'account', 'role', 'rooms')
 
 
 class MytCardSerializer(serializers.ModelSerializer):
@@ -19,4 +22,9 @@ class MytCardSerializer(serializers.ModelSerializer):
         read_only_fields = ('name', 'legion', 'day', 'difficulty', 'times')
 
 
-
+class RoomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Room
+        fields = ('name',)
+        read_only_fields = ('name',)
+        lookup_field = 'name'

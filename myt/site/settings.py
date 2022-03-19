@@ -29,7 +29,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     ".ap-southeast-1.compute.amazonaws.com",
-    ".malange.me",
+    ".malange.me"
 ]
 
 

@@ -2,9 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 
 from django.db.models import Max
-from django.http import HttpResponseServerError
+from django.http import HttpResponseServerError, HttpResponseBadRequest
 
-from myt.home.models import Myt, MytCard
+from myt.home.models import Myt, MytCard, Room
 
 
 def get_myt_account_num_by_characters(characters):
@@ -49,15 +49,13 @@ def scrape_character_info_dict(name):
     }
 
 
-def get_character_info_dict(name):
-    try:
-        Myt.objects.get(character=name)
-        return HttpResponseServerError('profile already exists')
-    except Myt.DoesNotExist:
-        return scrape_character_info_dict(name)
-
 # TODO: validation
-def process_message_for_db(message):
+def process_message_for_db(room_name, message):
+    try:
+        room = Room.objects.get(name=room_name)
+    except Room.DoesNotExist:
+        return HttpResponseBadRequest('false room')
+
     name = message['name']
     action = message['action']
     target = message['target']
@@ -66,26 +64,31 @@ def process_message_for_db(message):
     if 'source' in name:
         if action == 'delete':
             card_id = int(value.split('-')[-1])
-            MytCard.objects.get(id=card_id).delete()
+            myt_card = MytCard.objects.filter(id=card_id, room=room).first()
+            if myt_card:
+                myt_card.delete()
         elif action == 'add' and target != 'myts':
             myt_characters = [myt['character'] for myt in value.get('myts', [])]
             myts = Myt.objects.filter(character__in=myt_characters)
             myt_card = MytCard(legion=value['legion'],
                                day=value['day'],
                                difficulty=value['difficulty'],
-                               times=value['times'])
+                               times=value['times'],
+                               room=room)
             myt_card.save()
             myt_card.myts.add(*myts)
-            # new card being sent back with newly assigned id
+            # new card being sent back with newly assigned (name)id
             value['name'] = myt_card.name
 
     if 'card' in name:
         card_id = int(name.split('-')[-1])
-        myt_card = MytCard.objects.get(id=card_id)
+        myt_card = MytCard.objects.filter(id=card_id, room=room).first()
+        if myt_card is None:
+            return
         if action == 'add':
-            myt_card.myts.add(Myt.objects.get(character=value['character']))
+            myt_card.myts.add(Myt.objects.filter(character=value['character'], rooms__in=[room]).first())
         elif action == 'delete':
-            myt_card.myts.remove(Myt.objects.get(character=value['character']))
+            myt_card.myts.remove(Myt.objects.filter(character=value['character'], rooms__in=[room]).first())
         elif action == 'edit':
             MytCard.objects.filter(id=myt_card.id).update(**{target: value})
 

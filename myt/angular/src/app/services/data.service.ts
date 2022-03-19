@@ -3,11 +3,9 @@ import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { environment} from '../../environments/environment';
 
 import { Myt, MytCard } from '../models/myt.models';
 
-export const WS_ENDPOINT = environment.wsEndpoint;
 
 @Injectable({
   providedIn: 'root',
@@ -17,16 +15,20 @@ export class DataService {
 
   constructor(private http: HttpClient) { }
 
-  getMyts(): Observable<Myt[]> {
-    return this.http.get<Myt[]>(this.apiUrl + 'myt')
+  getRoom(roomName: string): Observable<string> {
+    return this.http.get<string>(this.apiUrl + 'room/' + roomName)
   }
 
-  getMytCards(): Observable<MytCard[]> {
-    return this.http.get<MytCard[]>(this.apiUrl + 'myt-card')
+  getMyts(roomName: string): Observable<Myt[]> {
+    return this.http.get<Myt[]>(this.apiUrl + 'myt/' + roomName)
   }
 
-  addMyts(myt: Myt): Observable<Myt> {
-    return this.http.post<Myt>(this.apiUrl + 'myt', myt)
+  getMytCards(roomName: string): Observable<MytCard[]> {
+    return this.http.get<MytCard[]>(this.apiUrl + 'myt-card/' + roomName)
+  }
+
+  addMyts(myt: Myt, roomName: string): Observable<Myt> {
+    return this.http.post<Myt>(this.apiUrl + 'myt/' + roomName, myt)
   }
 }
 
@@ -41,9 +43,9 @@ export class WebSocketService {
   constructor() {
   }
 
-  connect(): WebSocketSubject<any> {
+  connect(wsEndpoint: string): WebSocketSubject<any> {
     if (!this.ws || this.ws.closed) {
-      this.ws = webSocket(WS_ENDPOINT);
+      this.ws = webSocket(wsEndpoint);
     }
     return this.ws;
   }
