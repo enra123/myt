@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+import requests
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,9 +30,16 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     ".ap-southeast-1.compute.amazonaws.com",
-    ".malange.me"
+    ".malange.me",
+    "localhost",
+    "127.0.0.1",
 ]
 
+try:
+    EC2_IP = requests.get('http://169.254.169.254/latest/meta-data/local-ipv4').text
+    ALLOWED_HOSTS.append(EC2_IP)
+except requests.exceptions.RequestException:
+    pass
 
 # Application definition
 
