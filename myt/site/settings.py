@@ -35,6 +35,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 
+# adding private ip for alb health-checking ec2
 try:
     EC2_IP = requests.get('http://169.254.169.254/latest/meta-data/local-ipv4').text
     ALLOWED_HOSTS.append(EC2_IP)
@@ -132,8 +133,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 CRONJOBS = [
-    ('10 20 * * *', 'myt.home.cron.update_myts_info'),
-    ('11 20 * * *', 'myt.home.cron.reset_room_user_count')
+    ('10 20 * * *', 'myt.home.cron.update_myts_info')
 ]
 
 LOGGING = {
