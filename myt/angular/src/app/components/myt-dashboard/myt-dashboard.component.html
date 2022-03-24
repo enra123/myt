@@ -31,7 +31,7 @@
               <div cdkDropList id="myt-source-list" class="myt-list"
                    cdkDropListSortingDisabled
                    [cdkDropListData]="myts" (cdkDropListDropped)="onDropSource($event)">
-                <myt *ngFor="let myt of myts" [myt]="myt" cdkDrag></myt>
+                <myt *ngFor="let myt of (myts | mytOrderBy:'account')" [myt]="myt" cdkDrag></myt>
               </div>
 
             </div>

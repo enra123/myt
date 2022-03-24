@@ -23,6 +23,7 @@ import { CdkAccordionModule } from '@angular/cdk/accordion';
 import { DragDropModule } from "@angular/cdk/drag-drop";
 import { NgxMasonryModule } from 'ngx-masonry';
 import { MytAccordComponent } from './components/myt-accord/myt-accord.component';
+import { MytOrderByPipe } from './pipes/mytOrderBy.pipe';
 
 
 @NgModule({
@@ -31,7 +32,8 @@ import { MytAccordComponent } from './components/myt-accord/myt-accord.component
     MytComponent,
     MytDashboardComponent,
     MytCardComponent,
-    MytAccordComponent
+    MytAccordComponent,
+    MytOrderByPipe
   ],
     imports: [
       BrowserModule,
