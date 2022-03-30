@@ -3,6 +3,7 @@ import {Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { NzMarks } from 'ng-zorro-antd/slider';
 
 import { Myt, MytCard, MytMessage } from "../../models/myt.models";
+import { sliderTextColor, legions, days, difficulties } from "../../models/myt.constants";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import { MytMessageService } from '../../services/shared.service';
 
@@ -12,14 +13,13 @@ import { MytMessageService } from '../../services/shared.service';
   styleUrls: ['./myt-card.component.scss']
 })
 export class MytCardComponent implements OnInit {
-  @Output() mytOnDrop = new EventEmitter();
-  @Input() mytCard: MytCard;
-  private sliderTextColor: string = '#8b92a9';
-  legions: string[] = ['kakul-saydon', 'akkan', 'thaemine', 'brelshaza', 'vykas', 'valtan'];
-  legionIndexSelected: number = 0;
-  days: string[] = ['수', '목', '금', '토', '일', '월', '화']
-  difficulties: string[] = ['노', '하', '헬']
-  marks: NzMarks;
+  @Output() mytOnDrop = new EventEmitter()
+  @Input() mytCard: MytCard
+  legions: string[] = legions
+  legionIndexSelected: number = 0
+  days: string[] = days
+  difficulties: string[] = difficulties
+  marks: NzMarks
 
   constructor(private mytMessageService:MytMessageService) { }
 
@@ -58,19 +58,19 @@ export class MytCardComponent implements OnInit {
     this.marks = {
       12: {
         style: {
-          color: this.sliderTextColor
+          color: sliderTextColor
         },
         label: '12pm'
       },
       18: {
         style: {
-          color: this.sliderTextColor
+          color: sliderTextColor
         },
         label: '6pm'
       },
       24: {
         style: {
-          color: this.sliderTextColor
+          color: sliderTextColor
         },
         label: '12am'
       }
@@ -81,7 +81,7 @@ export class MytCardComponent implements OnInit {
       }
       this.marks[i] = {
         style: {
-          color: this.sliderTextColor,
+          color: sliderTextColor,
           fontSize: '0.8em'
         },
         label: (i - 12).toString()
@@ -95,7 +95,7 @@ export class MytCardComponent implements OnInit {
       action: 'edit',
       target: target,
       value: value
-    })
+    });
   }
 
   formatLabel(value: number) {

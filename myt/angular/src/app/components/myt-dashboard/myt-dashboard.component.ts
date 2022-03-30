@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { DataService } from "../../services/data.service";
 import { Myt, MytCard, MytMessage } from "../../models/myt.models";
+import { badgeColors, rippleColor, defaultMytCard, defaultMyt } from "../../models/myt.constants";
 import { MytMessageService } from '../../services/shared.service';
 import { first, switchMap } from "rxjs/operators";
 
@@ -16,24 +17,22 @@ import { first, switchMap } from "rxjs/operators";
 })
 export class MytDashboardComponent implements OnInit {
   @ViewChild(NgxMasonryComponent) masonry: NgxMasonryComponent | undefined;
-  rippleColor: string = '#aeb1bb';
-  myts: Myt[] = [];
-  temporaryMyts: Myt[] = [];  // for adding a new card
-  loadingNewCard: boolean = false;  // for adding a new card
-  mytCards: MytCard[] = [];
-  characterName: string = '';
-  colors: string[] = ['gold', 'orange', 'green-dark', 'pink',
-    'red', 'teal', 'blue-dark', 'purple']
-  colorIndex: number = 0;
+  rippleColor: string = rippleColor
+  myts: Myt[] = []
+  temporaryMyts: Myt[] = []  // for adding a new card
+  loadingNewCard: boolean = false  // for adding a new card
+  mytCards: MytCard[] = []
+  characterName: string = ''
+  colorIndex: number = 0
   mytColorMap = new Map<number, string>([])
   ngxMasonryOptions: NgxMasonryOptions = {
     gutter: 0,
     percentPosition: true,
-  };
-  loading: boolean = false;
-  displayOption: string = 'card';
-  connectedUserNum: number;
-  roomName: string;
+  }
+  loading: boolean = false
+  displayOption: string = 'card'
+  connectedUserNum: number
+  roomName: string
 
   constructor(private mytService: DataService,
               private mytMessageService: MytMessageService,
@@ -141,11 +140,7 @@ export class MytDashboardComponent implements OnInit {
 
   private getMytCardDefault(): MytCard {
     return <MytCard>{
-      name: 'myt-card-list-0',
-      legion: 'kakul-saydon',
-      day: '수',
-      difficulty: '노',
-      times: [18, 18],
+      ...defaultMytCard,
       myts: [this.temporaryMyts.pop()]
     }
   }
@@ -157,10 +152,10 @@ export class MytDashboardComponent implements OnInit {
   private setMytColor(myt: Myt): void {
     let color = this.getMytColor(myt);
     if (color === '') {
-      color = this.colors[this.colorIndex];
+      color = badgeColors[this.colorIndex];
       this.mytColorMap.set(myt.account, color);
       this.colorIndex = this.colorIndex + 1
-      if (this.colorIndex >= this.colors.length) {
+      if (this.colorIndex >= badgeColors.length) {
         this.colorIndex = 0;
       }
     }
@@ -267,11 +262,8 @@ export class MytDashboardComponent implements OnInit {
     }
     this.loading = true;
     let myt = <Myt>{
+      ...defaultMyt,
       character: this.characterName,
-      level: 0,
-      account: 0,
-      role: '',
-      color: '',
     }
     this.mytService.addMyts(myt, this.roomName)
       .subscribe({
