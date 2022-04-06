@@ -2,10 +2,10 @@ import {Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 
 import { NzMarks } from 'ng-zorro-antd/slider';
 
-import { Myt, MytCard, MytMessage } from "../../models/myt.models";
-import { sliderTextColor, legions, days, difficulties } from "../../models/myt.constants";
+import { Myt, MytCard } from "../../models/myt.models";
+import { sliderTextColor, legions, days, difficulties } from "../../core/myt.constants";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
-import { MytMessageService } from '../../services/shared.service';
+import {MytDragDropService, MytMessageService} from '../../services/myt.service';
 
 @Component({
   selector: 'myt-card',
@@ -13,7 +13,7 @@ import { MytMessageService } from '../../services/shared.service';
   styleUrls: ['./myt-card.component.scss']
 })
 export class MytCardComponent implements OnInit {
-  @Output() mytOnDrop = new EventEmitter()
+  // @Output() mytOnDrop = new EventEmitter()
   @Input() mytCard: MytCard
   legions: string[] = legions
   legionIndexSelected: number = 0
@@ -21,37 +21,16 @@ export class MytCardComponent implements OnInit {
   difficulties: string[] = difficulties
   marks: NzMarks
 
-  constructor(private mytMessageService:MytMessageService) { }
+  constructor(private mytMessageService:MytMessageService,
+              private mytDragDropService: MytDragDropService) { }
 
   ngOnInit(): void {
     this.setTimeSliderMarksDefault();
   }
 
   onDrop(event: CdkDragDrop<Myt[]>) {
-    // TODO: fix dirty work around with drag-drop item(element is correct) index(but previousIndex is wrong) bug(?).
-    const droppedMytText = event.item.element.nativeElement.innerText.split('\n').pop();
-    const droppedMyt = event.previousContainer.data.find(d => {
-      return d.character === droppedMytText
-    });
-    if (droppedMyt === undefined) {
-      throw new TypeError();
-    }
-    // delete out of drop zone myt
-    if (event.previousContainer.id === event.container.id && !event.isPointerOverContainer) {
-      this.mytCard.myts = this.mytCard.myts.filter(myt => myt.character !== droppedMyt.character);
-      this.mytMessageService.sendMessage(<MytMessage>{
-        name: this.mytCard.name,
-        action: 'delete',
-        target: 'myts',
-        value: droppedMyt
-      })
-      return;
-    }
-    // forbidding duplicated characters in a container
-    if (this.mytCard.myts.some(myt => myt.character === droppedMyt.character)) {
-      return;
-    }
-    this.mytOnDrop.emit(event);
+    // this.mytOnDrop.emit(event);
+    this.mytDragDropService.onDrop(event)
   }
 
   protected setTimeSliderMarksDefault() {
@@ -90,7 +69,7 @@ export class MytCardComponent implements OnInit {
   }
 
   protected cardValueOnChange(target: string, value: any) {
-    this.mytMessageService.sendMessage(<MytMessage>{
+    this.mytMessageService.sendMessage({
       name: this.mytCard.name,
       action: 'edit',
       target: target,

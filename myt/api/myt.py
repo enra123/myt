@@ -1,7 +1,7 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from django.http import HttpResponseServerError, HttpResponseBadRequest
+from django.http import HttpResponseBadRequest
 
 from myt.home.models import Myt, MytCard, Room
 from myt.home.serializers import MytSerializer, MytCardSerializer, RoomSerializer
@@ -46,6 +46,7 @@ class MytViewSet(generics.ListCreateAPIView):
         else:  # get
             return serializer_class(*args, **kwargs)
 
+    # TODO: making this ws instead of http, currently it's doing two round-trips
     def create(self, request, *args, **kwargs):
         """
         Myt record exists in db, then just link the room to the myt and return

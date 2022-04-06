@@ -64,7 +64,6 @@
         [attr.aria-expanded]="accordionItem.expanded"
         [attr.aria-controls]="'accordion-body-' + index">
         <myt-accord
-          (mytOnDrop)="onDropCard($event)"
           [mytCard]="mytCard"
           [accordionItem]="accordionItem"
           [index]="index">
@@ -89,7 +88,7 @@
       </div>
 
       <div *ngFor="let mytCard of mytCards" ngxMasonryItem class="masonry-item">
-        <myt-card class="myt-card" (mytOnDrop)="onDropCard($event)" [mytCard]="mytCard"></myt-card>
+        <myt-card class="myt-card" [mytCard]="mytCard"></myt-card>
         <button class="btn btn-default btn-round btn-just-icon delete-card-btn"
           (click)="deleteCardOnClick(mytCard)">
           <mat-icon>close</mat-icon>

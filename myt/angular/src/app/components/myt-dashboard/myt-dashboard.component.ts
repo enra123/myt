@@ -1,13 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
-import { CdkDragDrop, copyArrayItem, transferArrayItem } from '@angular/cdk/drag-drop';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { NgxMasonryComponent, NgxMasonryOptions } from 'ngx-masonry';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { DataService } from "../../services/data.service";
+import { DataService } from "../../services/shared.service";
 import { Myt, MytCard, MytMessage } from "../../models/myt.models";
-import { badgeColors, rippleColor, defaultMytCard, defaultMyt } from "../../models/myt.constants";
-import { MytMessageService } from '../../services/shared.service';
+import { badgeColors, rippleColor, defaultMytCard, defaultMyt } from "../../core/myt.constants";
+import { MytDragDropService, MytMessageService } from '../../services/myt.service';
 import { first, switchMap } from "rxjs/operators";
 
 @Component({
@@ -24,7 +24,7 @@ export class MytDashboardComponent implements OnInit {
   mytCards: MytCard[] = []
   characterName: string = ''
   colorIndex: number = 0
-  mytColorMap = new Map<number, string>([])
+  mytColorMap: Record<number, string> = {}
   ngxMasonryOptions: NgxMasonryOptions = {
     gutter: 0,
     percentPosition: true,
@@ -33,9 +33,11 @@ export class MytDashboardComponent implements OnInit {
   displayOption: string = 'card'
   connectedUserNum: number
   roomName: string
+  mytCardsProxy: MytCard[];
 
-  constructor(private mytService: DataService,
+  constructor(private dataService: DataService,
               private mytMessageService: MytMessageService,
+              private mytDragDropService: MytDragDropService,
               private snackBar: MatSnackBar,
               private route: ActivatedRoute) {
     this.route.params.pipe(first()).subscribe( (params) => {
@@ -51,6 +53,7 @@ export class MytDashboardComponent implements OnInit {
           err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
         );
     });
+
   }
 
   ngOnInit() {
@@ -58,17 +61,17 @@ export class MytDashboardComponent implements OnInit {
   }
 
   private fetchData() {
-    this.mytService.getMyts(this.roomName).pipe(
+    this.dataService.getMyts(this.roomName).pipe(
       switchMap(myts => {
         this.myts = myts;
         this.setMytsColors(this.myts);
-        return this.mytService.getMytCards(this.roomName);
+        return this.dataService.getMytCards(this.roomName);
       })
     ).subscribe(mytCards => {
       this.mytCards = mytCards;
       this.mytCards.forEach((mytCard) => {
         this.setMytsColors(mytCard.myts);
-      })
+      });
     })
   }
 
@@ -102,38 +105,19 @@ export class MytDashboardComponent implements OnInit {
         return;
       }
       let mytCard = this.mytCards[mytCardIndex];
-      switch (message.target) {
-        case 'myts': {
-          if (message.action === 'add') {
-            if (!mytCard.myts.some(myt => myt.character === message.value.character)) {
-              mytCard.myts.push(message.value);
-            }
-          } else if (message.action === 'delete') {
-            mytCard.myts = mytCard.myts.filter(
-              myt => myt.character != message.value.character
-            );
+      if (message.target === 'myts') {
+        if (message.action === 'add') {
+          if (!mytCard.myts.some(myt => myt.character === message.value.character)) {
+            mytCard.myts.push(message.value);
           }
-          break;
+        } else if (message.action === 'delete') {
+          mytCard.myts = mytCard.myts.filter(
+            myt => myt.character != message.value.character
+          );
         }
-        case 'difficulty': {
-          mytCard.difficulty = message.value;
-          break;
-        }
-        case 'legion': {
-          mytCard.legion = message.value;
-          break;
-        }
-        case 'day': {
-          mytCard.day = message.value;
-          break;
-        }
-        case 'times': {
-          mytCard.times = message.value;
-          break;
-        }
-        default: {
-          break;
-        }
+      } else {
+        // @ts-ignore
+        mytCard[message.target] = message.value;
       }
     }
   }
@@ -153,7 +137,7 @@ export class MytDashboardComponent implements OnInit {
     let color = this.getMytColor(myt);
     if (color === '') {
       color = badgeColors[this.colorIndex];
-      this.mytColorMap.set(myt.account, color);
+      this.mytColorMap[myt.account] = color;
       this.colorIndex = this.colorIndex + 1
       if (this.colorIndex >= badgeColors.length) {
         this.colorIndex = 0;
@@ -168,29 +152,6 @@ export class MytDashboardComponent implements OnInit {
     })
   }
 
-  private containerIdToCardName(containerId: string): string {
-    let cardName = containerId;
-    if (containerId.includes('grid-')) {
-      cardName = cardName.replace('grid-', '');
-    } else if (containerId.includes('accord-')) {
-      cardName = cardName.replace('accord-', '');
-    }
-    return cardName;
-  }
-
-  private mytDragDropTransfer(event: CdkDragDrop<Myt[]>, isCopy: boolean) {
-    // TODO: fix dirty work around with drag-drop item(element is correct) index(but previousIndex is wrong) bug(?).
-    const droppedMytText = event.item.element.nativeElement.innerText.split('\n').pop();
-    const previousIndex = event.previousContainer.data.findIndex(d => {
-      return d.character === droppedMytText
-    });
-    let copyOrTransferMethod = isCopy ? copyArrayItem : transferArrayItem;
-    copyOrTransferMethod(event.previousContainer.data,
-      event.container.data,
-      previousIndex,
-      event.currentIndex);
-  }
-
   reloadMasonryLayout() {
     if (this.masonry !== undefined) {
       this.masonry.layout();
@@ -201,50 +162,22 @@ export class MytDashboardComponent implements OnInit {
     this.snackBar.open(message, 'Close');
   }
 
-  onDropCard(event: CdkDragDrop<Myt[]>) {
-    const isCopy: boolean = event.previousContainer.id.includes('source');
-    // TODO: fix dirty work around with drag-drop item(element is correct) index(but previousIndex is wrong) bug(?).
-    const droppedMytText = event.item.element.nativeElement.innerText.split('\n').pop();
-    const droppedMyt = event.previousContainer.data.find(d => {
-      return d.character === droppedMytText
-    });
-    if (droppedMyt === undefined) {
-      throw new TypeError();
+  getMytColor(myt: Myt): string {
+    let color = this.mytColorMap[myt.account];
+    if (color === undefined) {
+      return '';
     }
-    this.mytDragDropTransfer(event, isCopy);
-
-    if (isCopy) { // Source -> Card
-      this.mytMessageService.sendMessage(<MytMessage>{
-        name: this.containerIdToCardName(event.container.id),
-        action: 'add',
-        target: 'myts',
-        value: droppedMyt
-      })
-    } else {  // Card -> Card
-      this.mytMessageService.sendMessage(<MytMessage>{
-        name: this.containerIdToCardName(event.container.id),
-        action: 'add',
-        target: 'myts',
-        value: droppedMyt
-      })
-      this.mytMessageService.sendMessage(<MytMessage>{
-        name: this.containerIdToCardName(event.previousContainer.id),
-        action: 'delete',
-        target: 'myts',
-        value: droppedMyt
-      })
-    }
-    this.reloadMasonryLayout();
+    return color;
   }
 
   onDropAdd(event: CdkDragDrop<Myt[]>) {
     if (this.loadingNewCard) {
       return;
     }
-    this.mytDragDropTransfer(event, true);
+    this.mytDragDropService.onDrop(event)
     this.loadingNewCard = true;
     const mytCard = this.getMytCardDefault();
-    this.mytMessageService.sendMessage(<MytMessage>{
+    this.mytMessageService.sendMessage({
       name: 'source',
       action: 'add',
       target: 'mytCards',
@@ -265,13 +198,14 @@ export class MytDashboardComponent implements OnInit {
       ...defaultMyt,
       character: this.characterName,
     }
-    this.mytService.addMyts(myt, this.roomName)
+    // TODO: making this ws instead of http, currently it's doing two round-trips
+    this.dataService.addMyts(myt, this.roomName)
       .subscribe({
         next: (myt: Myt) => {
           this.loading = false;
           this.myts.push(myt);
           this.setMytColor(myt);
-          this.mytMessageService.sendMessage(<MytMessage>{
+          this.mytMessageService.sendMessage({
             name: 'source',
             action: 'add',
             target: 'myts',
@@ -288,20 +222,12 @@ export class MytDashboardComponent implements OnInit {
 
   deleteCardOnClick(mytCard: MytCard): void {
     this.deleteCardByName(mytCard.name);
-    this.mytMessageService.sendMessage(<MytMessage>{
+    this.mytMessageService.sendMessage({
       name: 'source',
       action: 'delete',
       target: 'mytCards',
       value: mytCard.name
     });
-  }
-
-  getMytColor(myt: Myt): string {
-    let color = this.mytColorMap.get(myt.account);
-    if (color === undefined) {
-      return '';
-    }
-    return color;
   }
 
 }

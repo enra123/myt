@@ -1,5 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
+from channels.layers import get_channel_layer
+from asgiref.sync import sync_to_async
 
 from django.db.models import Max
 from django.http import HttpResponseServerError, HttpResponseBadRequest
@@ -47,6 +49,17 @@ def scrape_character_info_dict(name):
         'account': account,
         'role': role,
     }
+
+
+def send_out_channel_message(room_name, message):
+    channel_layer = get_channel_layer()
+    sync_to_async(channel_layer.group_send)(
+        room_name,
+        {
+            'type': 'myt_message',
+            'message': message,
+        }
+    )
 
 
 # TODO: validation

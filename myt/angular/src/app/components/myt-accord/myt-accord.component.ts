@@ -2,7 +2,6 @@ import {Component, Input} from '@angular/core';
 import { CdkAccordionItem } from '@angular/cdk/accordion';
 
 import { MytCardComponent } from '../myt-card/myt-card.component';
-import {MytCard} from "../../models/myt.models";
 
 @Component({
   selector: 'myt-accord',

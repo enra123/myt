@@ -1,62 +1,59 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
-import { Myt, MytMessage } from "../models/myt.models";
-import { Subject, Observable, of} from "rxjs";
-import { DataService, WebSocketService } from "./data.service";
-import { catchError, filter, map } from "rxjs/operators";
-import { environment } from "../../environments/environment";
-import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from "@angular/router";
+import { Observable } from 'rxjs';
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
+import { Myt, MytCard } from '../models/myt.models';
 
-export const WS_ENDPOINT = environment.wsEndpoint;
 
 @Injectable({
   providedIn: 'root',
 })
-export class MytMessageService {
-  public mytMessages: Observable<MytMessage>;
-  public connectionNumbers: Observable<number>;
+export class DataService {
+  private apiUrl: string = 'api/'
 
-  constructor(private wsService: WebSocketService) {}
+  constructor(private http: HttpClient) { }
 
-  connect(roomName: string) {
-    const messages = this.wsService.connect(WS_ENDPOINT + roomName).pipe(
-      map(response => response.message),
-      catchError(err => {throw err})
-    );
-
-    this.mytMessages = messages.pipe(
-      filter(msg => (<MytMessage>msg).name !== undefined)
-    );
-
-    this.connectionNumbers = messages.pipe(
-      filter(msg => typeof msg === 'number')
-    );
+  getRoom(roomName: string): Observable<string> {
+    return this.http.get<string>(this.apiUrl + 'room/' + roomName)
   }
 
-  sendMessage(message: MytMessage) {
-    this.wsService.sendMessage(message);
+  getMyts(roomName: string): Observable<Myt[]> {
+    return this.http.get<Myt[]>(this.apiUrl + 'myt/' + roomName)
+  }
+
+  getMytCards(roomName: string): Observable<MytCard[]> {
+    return this.http.get<MytCard[]>(this.apiUrl + 'myt-card/' + roomName)
+  }
+
+  addMyts(myt: Myt, roomName: string): Observable<Myt> {
+    return this.http.post<Myt>(this.apiUrl + 'myt/' + roomName, myt)
   }
 }
 
 @Injectable({
   providedIn: 'root',
 })
-export class CanActivateRoom implements CanActivate {
-  constructor(private dataService: DataService) {}
+export class WebSocketService {
+  private ws: WebSocketSubject<any>;
+  // // @ts-ignore
+  // public messages = this.messagesSubject.pipe(concatAll(), catchError(e => { throw e }));
 
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean> {
-      return this.dataService.getRoom(route.params['roomName']).pipe(
-        map(_ => true),
-        catchError(_ => of(false))
-      )
+  constructor() {
+  }
+
+  connect(wsEndpoint: string): WebSocketSubject<any> {
+    if (!this.ws || this.ws.closed) {
+      this.ws = webSocket(wsEndpoint);
+    }
+    return this.ws;
+  }
+
+  sendMessage(msg: any) {
+    this.ws.next(msg);
   }
 }
-
-
-
 
 
 

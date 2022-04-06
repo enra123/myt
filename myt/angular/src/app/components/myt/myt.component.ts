@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 
 import { Myt } from "../../models/myt.models";
-import { classKRMap, defaultMyt } from "../../models/myt.constants";
+import { classKRMap, defaultMyt } from "../../core/myt.constants";
 
 
 @Component({
@@ -19,7 +19,7 @@ export class MytComponent implements OnInit {
   }
 
   getClassNameFromRoleKR(): string {
-    return <string>classKRMap.get(this.myt.role)
+    return <string>classKRMap[this.myt.role]
   }
 
 }
