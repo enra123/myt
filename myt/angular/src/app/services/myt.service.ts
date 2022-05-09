@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 
-import { Myt, MytMessage } from "../models/myt.models";
+import { Myt, MytCard, MytMessage } from "../models/myt.models";
 import { Observable, of } from "rxjs";
 import { DataService, WebSocketService } from "./shared.service";
 import { catchError, filter, map } from "rxjs/operators";
 import { environment } from "../../environments/environment";
 import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from "@angular/router";
 import { CdkDragDrop, copyArrayItem, transferArrayItem } from "@angular/cdk/drag-drop";
+import { defaultMytCard } from "../core/myt.constants";
 
 export const WS_ENDPOINT = environment.wsEndpoint;
 
@@ -16,6 +17,7 @@ export const WS_ENDPOINT = environment.wsEndpoint;
 export class MytMessageService {
   public mytMessages: Observable<MytMessage>;
   public connectionNumbers: Observable<number>;
+  public announcements: Observable<string>;
 
   constructor(private wsService: WebSocketService) {}
 
@@ -32,10 +34,18 @@ export class MytMessageService {
     this.connectionNumbers = messages.pipe(
       filter(msg => typeof msg === 'number')
     );
+
+    this.announcements = messages.pipe(
+      filter(msg => typeof msg === 'string')
+    );
   }
 
   sendMessage(message: MytMessage) {
     this.wsService.sendMessage(message);
+  }
+
+  sendAnnouncement(announcement: string) {
+    this.wsService.sendMessage(announcement);
   }
 }
 
@@ -94,12 +104,22 @@ export class MytDragDropService {
         copyArrayItem(event.previousContainer.data, event.container.data, previousIndex, event.currentIndex)
         mytMessages.push({name: currentContainer.cardName, action: 'add', target: 'myts', value: droppedMyt})
         break
-      case 'source->add':
-        copyArrayItem(event.previousContainer.data, event.container.data, previousIndex, event.currentIndex)
+      case 'source->add': {
+        const mytCard = <MytCard>{
+          ...defaultMytCard,
+          myts: [droppedMyt]
+        }
+        mytMessages.push({name: 'source', action: 'add', target: 'mytCards', value: mytCard})
         break
-      case 'card->add':
-        copyArrayItem(event.previousContainer.data, event.container.data, previousIndex, event.currentIndex)
+      }
+      case 'card->add': {
+        const mytCard = <MytCard>{
+          ...event.item.data,
+          myts: [droppedMyt]
+        }
+        mytMessages.push({name: 'source', action: 'add', target: 'mytCards', value: mytCard})
         break
+      }
       case 'card->card':
         if (previousContainer.cardName === currentContainer.cardName && !event.isPointerOverContainer) {
           // drag-drop out of box deletes the myt

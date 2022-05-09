@@ -10,7 +10,7 @@
 .badge-wrapper {
   display: block;
   width: 100%;
-  padding: 0 1em;
+  padding: 0 2.2em;
 }
 .input-group {
   width: 300px;
@@ -68,6 +68,14 @@
   }
 }
 
+.navbar-nav {
+  margin-left: -20px;
+
+  li {
+    padding: 0 8px;
+  }
+}
+
 .display-toggle {
   margin-top: -15px;
   margin-bottom: 15px;
@@ -79,6 +87,7 @@
   margin-bottom: 8px;
   padding: 0 27px;
   flex-direction: row-reverse;
+  justify-content: space-between;
 
   .mat-icon {
     font-size: 30px;
@@ -116,6 +125,9 @@
 }
 
 @media screen and (min-width: 576px) {
+  .badge-wrapper {
+    padding: 0 1em;
+  }
   .masonry-item { width: 50%; }
   .add-card {
     min-height: 264px;

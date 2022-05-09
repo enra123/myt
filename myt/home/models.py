@@ -53,3 +53,12 @@ class MytCard(models.Model):
     @property
     def name(self):
         return f'myt-card-list-{self.id}'
+
+
+class Announcement(models.Model):
+    message = models.CharField(max_length=200)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_deleted = models.BooleanField(default=0)
+
+

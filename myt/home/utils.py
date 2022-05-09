@@ -6,7 +6,7 @@ from asgiref.sync import sync_to_async
 from django.db.models import Max
 from django.http import HttpResponseServerError, HttpResponseBadRequest
 
-from myt.home.models import Myt, MytCard, Room
+from myt.home.models import Myt, MytCard, Room, Announcement
 
 
 def get_myt_account_num_by_characters(characters):
@@ -62,8 +62,18 @@ def send_out_channel_message(room_name, message):
     )
 
 
+def append_announcement(room_name, announcement):
+    try:
+        room = Room.objects.get(name=room_name)
+    except Room.DoesNotExist:
+        return HttpResponseBadRequest('false room')
+
+    announcement = Announcement(message=announcement, room=room)
+    announcement.save()
+
+
 # TODO: validation
-def process_message_for_db(room_name, message):
+def process_myt_message_for_db(room_name, message):
     try:
         room = Room.objects.get(name=room_name)
     except Room.DoesNotExist:

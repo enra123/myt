@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from myt.home.models import Myt, MytCard, Room
+from myt.home.models import Myt, MytCard, Room, Announcement
 
 
 class MytSerializer(serializers.ModelSerializer):
@@ -28,3 +28,14 @@ class RoomSerializer(serializers.ModelSerializer):
         fields = ('name',)
         read_only_fields = ('name',)
         lookup_field = 'name'
+
+
+class AnnouncementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Announcement
+        fields = ('message',)
+
+    def to_representation(self, instance):
+        data = super(AnnouncementSerializer, self).to_representation(instance)
+
+        return data.get('message', '')

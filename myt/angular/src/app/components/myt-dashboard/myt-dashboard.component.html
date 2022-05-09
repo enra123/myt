@@ -3,6 +3,13 @@
 
     <div class="row dashboard-header">
       <mat-icon [matBadge]="connectedUserNum" matBadgePosition="above before" matBadgeColor="accent">wifi</mat-icon>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <button class="btn btn-just-icon btn-transparent" [ngClass]="btnClass" (click)="openDialog()">
+            <mat-icon class="material-icons">event_note</mat-icon>
+          </button>
+        </li>
+      </ul>
     </div>
 
     <div class="row">
@@ -81,7 +88,7 @@
           </ng-container>
           <div cdkDropList id="myt-add-card" class="myt-list"
                cdkDropListSortingDisabled
-               [cdkDropListData]="temporaryMyts" (cdkDropListDropped)="onDropAdd($event)">
+               (cdkDropListDropped)="onDropAdd($event)">
             <mat-icon class="add-icon">note_add</mat-icon>
           </div>
         </div>

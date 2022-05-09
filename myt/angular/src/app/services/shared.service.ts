@@ -19,6 +19,10 @@ export class DataService {
     return this.http.get<string>(this.apiUrl + 'room/' + roomName)
   }
 
+  getAnnouncements(roomName: string): Observable<string[]> {
+    return this.http.get<string[]>(this.apiUrl + 'announcement/' + roomName)
+  }
+
   getMyts(roomName: string): Observable<Myt[]> {
     return this.http.get<Myt[]>(this.apiUrl + 'myt/' + roomName)
   }

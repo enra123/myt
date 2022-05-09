@@ -1,5 +1,4 @@
 .myt-list {
-  min-height: 55px;
   justify-content: center;
 }
 
@@ -16,8 +15,8 @@
 
   .card-body {
     text-align: center;
-    padding-left: 0.7em;
-    padding-right: 0.7em;
+    padding-left: 1.2em;
+    padding-right: 1.2em;
   }
 
   .card-footer {
@@ -105,6 +104,14 @@
   }
 }
 
+@media screen and (min-width: 576px) {
+  .card.card-chart {
+    .card-body {
+      padding-left: 0.7em;
+      padding-right: 0.7em;
+    }
+  }
+}
 
 
 

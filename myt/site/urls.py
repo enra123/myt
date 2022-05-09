@@ -23,6 +23,7 @@ from myt.api import myt
 
 urlpatterns = [
     path('api/room/<str:name>', myt.RoomViewSet.as_view()),
+    path('api/announcement/<str:room_name>', myt.AnnouncementViewSet.as_view()),
     path('api/myt/<str:room_name>', myt.MytViewSet.as_view()),
     path('api/myt-card/<str:room_name>', myt.MytCardViewSet.as_view()),
 ]

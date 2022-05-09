@@ -17,6 +17,9 @@ import { MatSliderModule } from "@angular/material/slider";
 import { MatRippleModule } from '@angular/material/core';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NzSliderModule } from 'ng-zorro-antd/slider';
 import { CdkAccordionModule } from '@angular/cdk/accordion';
@@ -24,6 +27,7 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
 import { NgxMasonryModule } from 'ngx-masonry';
 import { MytAccordComponent } from './components/myt-accord/myt-accord.component';
 import { MytOrderByPipe } from './pipes/mytOrderBy.pipe';
+import { MytDialogComponent } from './components/myt-dialog/myt-dialog.component';
 
 
 @NgModule({
@@ -33,7 +37,8 @@ import { MytOrderByPipe } from './pipes/mytOrderBy.pipe';
     MytDashboardComponent,
     MytCardComponent,
     MytAccordComponent,
-    MytOrderByPipe
+    MytOrderByPipe,
+    MytDialogComponent
   ],
     imports: [
       BrowserModule,
@@ -47,6 +52,9 @@ import { MytOrderByPipe } from './pipes/mytOrderBy.pipe';
       MatSliderModule,
       MatRippleModule,
       MatSnackBarModule,
+      MatDialogModule,
+      MatDividerModule,
+      MatListModule,
       MatProgressSpinnerModule,
       MatButtonToggleModule,
       MatBadgeModule,

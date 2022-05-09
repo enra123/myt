@@ -3,12 +3,15 @@ import { ActivatedRoute } from "@angular/router";
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { NgxMasonryComponent, NgxMasonryOptions } from 'ngx-masonry';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 import { DataService } from "../../services/shared.service";
 import { Myt, MytCard, MytMessage } from "../../models/myt.models";
 import { badgeColors, rippleColor, defaultMytCard, defaultMyt } from "../../core/myt.constants";
 import { MytDragDropService, MytMessageService } from '../../services/myt.service';
 import { first, switchMap } from "rxjs/operators";
+import { MytDialogComponent } from "../myt-dialog/myt-dialog.component";
+
 
 @Component({
   selector: 'myt-dashboard',
@@ -17,9 +20,12 @@ import { first, switchMap } from "rxjs/operators";
 })
 export class MytDashboardComponent implements OnInit {
   @ViewChild(NgxMasonryComponent) masonry: NgxMasonryComponent | undefined;
+  ANNOUNCEMENT_MAX_SIZE: number = 5
   rippleColor: string = rippleColor
+  btnClass: string = ''
   myts: Myt[] = []
-  temporaryMyts: Myt[] = []  // for adding a new card
+  dialogRef: MatDialogRef<MytDialogComponent>
+  announcements: string[] = []
   loadingNewCard: boolean = false  // for adding a new card
   mytCards: MytCard[] = []
   characterName: string = ''
@@ -33,13 +39,13 @@ export class MytDashboardComponent implements OnInit {
   displayOption: string = 'card'
   connectedUserNum: number
   roomName: string
-  mytCardsProxy: MytCard[];
 
   constructor(private dataService: DataService,
               private mytMessageService: MytMessageService,
               private mytDragDropService: MytDragDropService,
               private snackBar: MatSnackBar,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private dialog: MatDialog) {
     this.route.params.pipe(first()).subscribe( (params) => {
       this.roomName = params['roomName'];
       mytMessageService.connect(this.roomName);
@@ -50,6 +56,11 @@ export class MytDashboardComponent implements OnInit {
 
       mytMessageService.connectionNumbers.subscribe(
           msg => this.connectedUserNum = msg,
+          err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
+        );
+
+      mytMessageService.announcements.subscribe(
+          msg => this.updateAnnouncement(msg),
           err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
         );
     });
@@ -65,6 +76,13 @@ export class MytDashboardComponent implements OnInit {
       switchMap(myts => {
         this.myts = myts;
         this.setMytsColors(this.myts);
+        return this.dataService.getAnnouncements(this.roomName);
+      }),
+      switchMap(announcements => {
+        if (announcements.length) {
+          this.openAnnounceBar(announcements[0]);
+        }
+        this.announcements = announcements.reverse();
         return this.dataService.getMytCards(this.roomName);
       })
     ).subscribe(mytCards => {
@@ -73,6 +91,18 @@ export class MytDashboardComponent implements OnInit {
         this.setMytsColors(mytCard.myts);
       });
     })
+  }
+
+  private updateAnnouncement(announcement: string) {
+    if (this.announcements.length >= this.ANNOUNCEMENT_MAX_SIZE) {
+      this.announcements.shift()
+    }
+    this.announcements.push(announcement)
+    if (this.dialogRef && this.dialogRef.componentInstance) {
+      this.dialogRef.componentInstance.data = this.announcements;
+    } else {
+      this.btnClass = 'btn-alarmed'
+    }
   }
 
   private processMytMessage(message: MytMessage) {
@@ -122,13 +152,6 @@ export class MytDashboardComponent implements OnInit {
     }
   }
 
-  private getMytCardDefault(): MytCard {
-    return <MytCard>{
-      ...defaultMytCard,
-      myts: [this.temporaryMyts.pop()]
-    }
-  }
-
   private deleteCardByName(name: string): void {
     this.mytCards = this.mytCards.filter(item => item.name !== name);
   }
@@ -158,8 +181,23 @@ export class MytDashboardComponent implements OnInit {
     }
   }
 
+  openDialog() {
+    this.dialogRef = this.dialog.open(MytDialogComponent, {
+      position: {top: '0'},
+      data: this.announcements,
+    });
+    this.btnClass = ''
+  }
+
   openErrorBar(message: string) {
     this.snackBar.open(message, 'Close');
+  }
+
+  openAnnounceBar(message: string) {
+    this.snackBar.open(message, 'Close', {
+      verticalPosition: 'top',
+      panelClass: ['announce-snackbar']
+    });
   }
 
   getMytColor(myt: Myt): string {
@@ -176,13 +214,6 @@ export class MytDashboardComponent implements OnInit {
     }
     this.mytDragDropService.onDrop(event)
     this.loadingNewCard = true;
-    const mytCard = this.getMytCardDefault();
-    this.mytMessageService.sendMessage({
-      name: 'source',
-      action: 'add',
-      target: 'mytCards',
-      value: mytCard
-    });
   }
 
   onDropSource(event: CdkDragDrop<Myt[]>) {

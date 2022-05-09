@@ -1,0 +1,20 @@
+<div mat-dialog-content>
+  <mat-list>
+    <ng-container *ngFor="let message of data">
+      <mat-list-item>{{ message }}</mat-list-item>
+      <mat-divider></mat-divider>
+    </ng-container>
+
+    <mat-list-item>
+      <form class="input-group no-border" (ngSubmit)="submitAnnouncement()">
+        <input type="text" [(ngModel)]="announcement" name="announcement"
+               class="form-control" maxlength="100" placeholder="채팅창 아냐...">
+        <button matRipple [matRippleColor]="rippleColor" type="submit"
+                class="btn btn-just-icon btn-transparent">
+          <mat-icon>publish</mat-icon>
+        </button>
+      </form>
+    </mat-list-item>
+
+  </mat-list>
+</div>
