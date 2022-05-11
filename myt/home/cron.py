@@ -9,7 +9,7 @@ if __name__ == "__main__":
 import logging
 from django.http import HttpResponseServerError
 
-from myt.home.models import Myt, Room
+from myt.home.models import Myt, Room, Announcement
 from myt.home.utils import scrape_character_info_dict
 
 logger = logging.getLogger(__name__)
@@ -33,8 +33,20 @@ def update_myts_info():
     logger.info("updating myts cron end")
 
 
+def clear_announcements():
+    logger.info("clearing announcements")
+    announcements = Announcement.objects.filter(is_deleted=False)
+
+    for announcement in announcements:
+        announcement.is_deleted = True
+        announcement.save()
+
+    logger.info("cleared announcements")
+
+
 # TODO: fix room user_count numbers if things go wrong, but
 # channel-presence library is recommended for proper websocket groups management
+# NOT BEING USED ATM
 def reset_room_user_count():
     logger.info("reset room cron start")
     rooms = Room.objects.all()
