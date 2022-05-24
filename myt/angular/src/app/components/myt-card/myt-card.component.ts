@@ -13,7 +13,6 @@ import {MytDragDropService, MytMessageService} from '../../services/myt.service'
   styleUrls: ['./myt-card.component.scss']
 })
 export class MytCardComponent implements OnInit {
-  // @Output() mytOnDrop = new EventEmitter()
   @Input() mytCard: MytCard
   legions: string[] = legions
   legionIndexSelected: number = 0
@@ -29,7 +28,6 @@ export class MytCardComponent implements OnInit {
   }
 
   onDrop(event: CdkDragDrop<Myt[]>) {
-    // this.mytOnDrop.emit(event);
     this.mytDragDropService.onDrop(event)
   }
 

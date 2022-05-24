@@ -28,6 +28,7 @@ import { NgxMasonryModule } from 'ngx-masonry';
 import { MytAccordComponent } from './components/myt-accord/myt-accord.component';
 import { MytOrderByPipe } from './pipes/mytOrderBy.pipe';
 import { MytDialogComponent } from './components/myt-dialog/myt-dialog.component';
+import { SpinningWheelComponent } from './components/spinning-wheel/spinning-wheel.component';
 
 
 @NgModule({
@@ -38,7 +39,8 @@ import { MytDialogComponent } from './components/myt-dialog/myt-dialog.component
     MytCardComponent,
     MytAccordComponent,
     MytOrderByPipe,
-    MytDialogComponent
+    MytDialogComponent,
+    SpinningWheelComponent
   ],
     imports: [
       BrowserModule,

@@ -1,0 +1,15 @@
+
+<div class="wheel-wrapper" (window:resize)="onResize($event)">
+  <div class="card">
+    <span class="quality-text" [ngStyle]="getNumberStyle()">
+      {{ number }}
+    </span>
+  </div>
+  <div class="arrow-down"></div>
+  <canvas #myCanvas>
+  Your browser does not support the HTML5 canvas tag.</canvas>
+  <button class="btn btn-default btn-just-icon" (click)="spin()">
+    <mat-icon>refresh</mat-icon>
+  </button>
+</div>
+

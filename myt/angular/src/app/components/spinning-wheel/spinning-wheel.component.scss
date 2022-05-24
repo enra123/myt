@@ -1,0 +1,31 @@
+.wheel-wrapper {
+  text-align: center;
+  margin-top: 8em;
+}
+
+.arrow-down {
+  width: 0;
+  height: 0;
+  margin: -5px auto;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 40px solid #ebc8da;
+}
+
+.btn.btn-just-icon {
+  display: block;
+  margin: 12px auto;
+}
+
+.card {
+  width: 48px;
+  margin: 10px auto;
+}
+
+.quality-text {
+  color: grey;
+  font-size: 1.3em;
+  margin-bottom: 2px;
+}
+
+
