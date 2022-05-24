@@ -70,8 +70,9 @@ export class SpinningWheelComponent implements AfterViewInit {
     return Math.random() * 100
   }
 
-  /* receiving 0 ~ 99.99999 and returning matching number referring to probabilitiesCumulative 0 ~ 100 (whole number)
-     e.g. 22.9 -> 10, 43 -> 19, 96.8 -> 70, 98.43 -> 83, 99.94 -> 100
+  /* receiving 0 ~ 99.99999 and returning matching number referring to probabilitiesCumulative 0 ~ 100.00
+     e.g. 22.9 -> 10 * 3.6, 43 -> 19.3228 * 3.6, 96.8 -> 70.507 * 3.6,
+          98.43 -> 83.1068 * 3.6, 99.94 -> 99.3023 * 3.6
   */
   private getNumberFromProbability(p: number): number {
     const i = this.probabilitiesCumulative.findIndex((e) => { // guaranteed i > 0
@@ -84,21 +85,11 @@ export class SpinningWheelComponent implements AfterViewInit {
       n = 11
     }
 
-    return (i - 1) * 10 + Math.floor((p - m) / d * n)
+    return (i - 1) * 10 + (p - m) / d * n
   }
 
-  /* receiving 0 ~ 99.99999 and returning matching number * 3.6 referring to probabilitiesCumulative 0 ~ 360.0
-     e.g. 22.9 -> 10 * 3.6, 43 -> 19.3228 * 3.6, 96.8 -> 70.507 * 3.6,
-          98.43 -> 83.1068 * 3.6, 99.94 -> 99.3023 * 3.6
-  */
   private getAngleFromProbability(p: number): number {
-    const i = this.probabilitiesCumulative.findIndex((e) => { // guaranteed i > 0
-      return p < e
-    })
-    const m = this.probabilitiesCumulative[i - 1]
-    const d = this.probabilityDifferences[i - 1]
-    const r = (i - 1) * 10 + (p - m) / d * 10
-    return 3.6 * r
+    return 3.6 * this.getNumberFromProbability(p)
   }
 
   private getInitialVelocityFromNumber(x: number): number {
@@ -111,7 +102,7 @@ export class SpinningWheelComponent implements AfterViewInit {
 
   private setDisplayNumber() {
     const a = this.angle % 360
-    this.number = this.getNumberFromProbability(a / 360 * 100)
+    this.number = Math.floor(this.getNumberFromProbability(a / 360 * 100))
   }
 
   private degToRad(deg: number): number {
