@@ -113,16 +113,16 @@ export class SpinningWheelComponent implements AfterViewInit {
     if (this.number == 100){
       return {color: '#ff9a30', fontWeight: 800}
     }
-    if (this.number > 90){
+    if (this.number > 89){
       return {color: '#c808fa', fontWeight: 700}
     }
-    if (this.number > 70){
+    if (this.number > 69){
       return {color: '#0979f6', fontWeight: 600}
     }
-    if (this.number > 30){
+    if (this.number > 29){
       return {color: '#13b63d', fontWeight: 500}
     }
-    if (this.number > 10){
+    if (this.number > 9){
       return {color: '#e0c229', fontWeight: 200}
     }
     if (this.number > 0){
