@@ -5,7 +5,7 @@ import { Observable, of } from "rxjs";
 import { DataService, WebSocketService } from "./shared.service";
 import { catchError, filter, map } from "rxjs/operators";
 import { environment } from "../../environments/environment";
-import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from "@angular/router";
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from "@angular/router";
 import { CdkDragDrop, copyArrayItem, transferArrayItem } from "@angular/cdk/drag-drop";
 import { defaultMytCard } from "../core/myt.constants";
 
@@ -145,14 +145,17 @@ export class MytDragDropService {
   providedIn: 'root',
 })
 export class CanActivateRoom implements CanActivate {
-  constructor(private dataService: DataService) {}
+  constructor(private dataService: DataService, private router: Router) {}
 
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> {
       return this.dataService.getRoom(route.params['roomName']).pipe(
         map(_ => true),
-        catchError(_ => of(false))
+        catchError(_ => {
+          this.router.navigateByUrl('/myt');
+          return of(false)
+        })
       )
   }
 }

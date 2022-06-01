@@ -29,6 +29,7 @@ import { MytAccordComponent } from './components/myt-accord/myt-accord.component
 import { MytOrderByPipe } from './pipes/mytOrderBy.pipe';
 import { MytDialogComponent } from './components/myt-dialog/myt-dialog.component';
 import { SpinningWheelComponent } from './components/spinning-wheel/spinning-wheel.component';
+import { MytRoomComponent } from './components/myt-room/myt-room.component';
 
 
 @NgModule({
@@ -40,7 +41,8 @@ import { SpinningWheelComponent } from './components/spinning-wheel/spinning-whe
     MytAccordComponent,
     MytOrderByPipe,
     MytDialogComponent,
-    SpinningWheelComponent
+    SpinningWheelComponent,
+    MytRoomComponent
   ],
     imports: [
       BrowserModule,

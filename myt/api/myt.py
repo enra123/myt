@@ -1,4 +1,4 @@
-from rest_framework import generics, status
+from rest_framework import generics, status, mixins
 from rest_framework.response import Response
 
 from django.http import HttpResponseBadRequest
@@ -15,8 +15,8 @@ class MytRoomMixin:
     This view should return a list of all myts in the room only.
     """
     def get_room(self):
-        room_name = self.kwargs.get('room_name', '')
         try:
+            room_name = self.kwargs.get('room_name', '')
             room = Room.objects.get(name=room_name)
             return room
         except Room.DoesNotExist:
@@ -74,10 +74,30 @@ class MytCardViewSet(generics.ListCreateAPIView, MytRoomMixin):
         return MytCard.objects.filter(room=self.get_room())
 
 
-class RoomViewSet(generics.RetrieveAPIView):
+class RoomViewSet(generics.GenericAPIView, mixins.CreateModelMixin, mixins.RetrieveModelMixin, MytRoomMixin):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
     lookup_field = 'name'
+
+    def create(self, request, *args, **kwargs):
+        """
+        get & return if exists or create & return
+        """
+        try:
+            room = Room.objects.get(name=request.data.get('name', ''))
+            serialized_room = self.serializer_class(instance=room)
+            headers = self.get_success_headers(serialized_room.data)
+            response = Response(serialized_room.data, status=status.HTTP_201_CREATED, headers=headers)
+        except Room.DoesNotExist:
+            response = super(RoomViewSet, self).create(request, *args, **kwargs)
+
+        return response
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
 
 
 class AnnouncementViewSet(generics.ListAPIView, MytRoomMixin):

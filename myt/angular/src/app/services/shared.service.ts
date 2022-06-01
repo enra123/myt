@@ -19,6 +19,10 @@ export class DataService {
     return this.http.get<string>(this.apiUrl + 'room/' + roomName)
   }
 
+  addRoom(roomName: string): Observable<string> {
+    return this.http.post<any>(this.apiUrl + 'room/', {'name': roomName})
+  }
+
   getAnnouncements(roomName: string): Observable<string[]> {
     return this.http.get<string[]>(this.apiUrl + 'announcement/' + roomName)
   }

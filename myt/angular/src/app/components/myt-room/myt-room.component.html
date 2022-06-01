@@ -1,0 +1,17 @@
+<div class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <p class="exp">방 참가 또는 생성 - 영문, 숫자만</p>
+    </div>
+    <div class="row">
+      <form class="input-group no-border" (ngSubmit)="addRoom()">
+        <input type="text" [(ngModel)]="roomName" name="rname"
+               class="form-control" placeholder="Room name">
+        <button matRipple [matRippleColor]="rippleColor" type="submit"
+                class="btn btn-default btn-round btn-just-icon">
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

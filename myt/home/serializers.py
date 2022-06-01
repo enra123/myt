@@ -26,7 +26,6 @@ class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
         fields = ('name',)
-        read_only_fields = ('name',)
         lookup_field = 'name'
 
 

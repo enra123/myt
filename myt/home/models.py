@@ -1,12 +1,13 @@
 from django.db import models
+from django.core.validators import RegexValidator
 
-
-# Create your models here.
 from jsonfield import JSONField
+
+alphanumeric = RegexValidator(r'^[0-9a-zA-Z]*$', 'Only alphanumeric characters are allowed.')
 
 
 class Room(models.Model):
-    name = models.CharField(max_length=20, unique=True)
+    name = models.CharField(max_length=20, unique=True, validators=[alphanumeric])
     user_count = models.IntegerField(default=0)
 
     @classmethod

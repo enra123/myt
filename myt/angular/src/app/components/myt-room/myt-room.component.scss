@@ -1,0 +1,13 @@
+.content {
+  margin: 8em auto;
+  width: 100%;
+  padding: 10px;
+}
+
+.exp {
+  padding: 5px;
+}
+
+@media screen and (min-width: 768px) {
+  .content { width: 50%; }
+}
