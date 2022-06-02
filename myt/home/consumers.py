@@ -21,7 +21,7 @@ class MytConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.accept()
-        count = await database_sync_to_async(Room.increase_user_count)(self.room)
+        count = await database_sync_to_async(Room.increase_user_count)(self.room.id)
         await self.channel_layer.group_send(
             self.group_name,
             {
@@ -32,7 +32,7 @@ class MytConsumer(AsyncWebsocketConsumer):
         )
 
     async def disconnect(self, close_code):
-        count = await database_sync_to_async(Room.decrease_user_count)(self.room)
+        count = await database_sync_to_async(Room.decrease_user_count)(self.room.id)
         await self.channel_layer.group_send(
             self.group_name,
             {

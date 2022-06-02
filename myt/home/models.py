@@ -8,13 +8,15 @@ class Room(models.Model):
     user_count = models.IntegerField(default=0)
 
     @classmethod
-    def increase_user_count(cls, room):
+    def increase_user_count(cls, room_id):
+        room = Room.objects.get(id=room_id)
         room.user_count += 1
         room.save()
         return room.user_count
 
     @classmethod
-    def decrease_user_count(cls, room):
+    def decrease_user_count(cls, room_id):
+        room = Room.objects.get(id=room_id)
         room.user_count -= 1
         room.save()
         return room.user_count
