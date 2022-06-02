@@ -21,15 +21,16 @@ export class MytRoomComponent implements OnInit {
 
   addRoom(): void {
     if (!this.roomName || this.loading) return
-    this.loading = true;
+    this.loading = true
 
     this.dataService.addRoom(this.roomName)
       .subscribe({
         next: (result: any) => {
-          this.router.navigateByUrl('/myt/' + result.name);
+          this.router.navigateByUrl('/myt/' + result.name)
         },
         error: () => {
-          this.loading = false;
+          this.roomName = ''
+          this.loading = false
         },
         complete: () => this.loading = false
       });

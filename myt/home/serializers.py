@@ -28,6 +28,16 @@ class RoomSerializer(serializers.ModelSerializer):
         fields = ('name',)
         lookup_field = 'name'
 
+    def to_internal_value(self, data):
+        if not self.instance:
+            data.update({
+                'name': ''.join(c for c in data['name'] if c.isalnum()),
+            })
+
+        validated_data = super(RoomSerializer, self).to_internal_value(data)
+
+        return validated_data
+
 
 class AnnouncementSerializer(serializers.ModelSerializer):
     class Meta:

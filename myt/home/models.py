@@ -1,32 +1,20 @@
 from django.db import models
-from django.core.validators import RegexValidator
 
 from jsonfield import JSONField
 
-alphanumeric = RegexValidator(r'^[0-9a-zA-Z]*$', 'Only alphanumeric characters are allowed.')
-
 
 class Room(models.Model):
-    name = models.CharField(max_length=20, unique=True, validators=[alphanumeric])
+    name = models.CharField(max_length=20, blank=False, null=False, unique=True)
     user_count = models.IntegerField(default=0)
 
     @classmethod
-    def increase_user_count(cls, room_name):
-        room = cls.objects.get(name=room_name)
+    def increase_user_count(cls, room):
         room.user_count += 1
         room.save()
         return room.user_count
 
     @classmethod
-    def users_count(cls, room_name):
-        rooms = cls.objects.filter(name=room_name)
-        if rooms.exists():
-            return rooms.first().user_count
-        return 0
-
-    @classmethod
-    def decrease_user_count(cls, room_name):
-        room = cls.objects.get(name=room_name)
+    def decrease_user_count(cls, room):
         room.user_count -= 1
         room.save()
         return room.user_count

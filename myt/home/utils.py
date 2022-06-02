@@ -1,7 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-from channels.layers import get_channel_layer
-from asgiref.sync import sync_to_async
 
 from django.db.models import Max
 from django.http import HttpResponseServerError, HttpResponseBadRequest
@@ -51,34 +49,13 @@ def scrape_character_info_dict(name):
     }
 
 
-def send_out_channel_message(room_name, message):
-    channel_layer = get_channel_layer()
-    sync_to_async(channel_layer.group_send)(
-        room_name,
-        {
-            'type': 'myt_message',
-            'message': message,
-        }
-    )
-
-
-def append_announcement(room_name, announcement):
-    try:
-        room = Room.objects.get(name=room_name)
-    except Room.DoesNotExist:
-        return HttpResponseBadRequest('false room')
-
+def append_announcement(room, announcement):
     announcement = Announcement(message=announcement, room=room)
     announcement.save()
 
 
 # TODO: validation
-def process_myt_message_for_db(room_name, message):
-    try:
-        room = Room.objects.get(name=room_name)
-    except Room.DoesNotExist:
-        return HttpResponseBadRequest('false room')
-
+def process_myt_message_for_db(room, message):
     name = message['name']
     action = message['action']
     target = message['target']
