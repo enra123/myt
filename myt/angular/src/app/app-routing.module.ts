@@ -1,15 +1,21 @@
 import { Injectable, NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { MytDashboardComponent } from "./components/myt-dashboard/myt-dashboard.component";
-import { MytRoomComponent } from "./components/myt-room/myt-room.component";
-import { SpinningWheelComponent } from "./components/spinning-wheel/spinning-wheel.component";
-import { CanActivateRoom } from "./services/myt.service";
 
 
 const routes: Routes = [
-  { path: 'myt/:roomName', component: MytDashboardComponent, canActivate: [CanActivateRoom] },
-  { path: 'myt', component: MytRoomComponent },
-  { path: '', component: SpinningWheelComponent },
+  {
+    path: 'myt',
+    loadChildren: () => import('./myt/myt.module').then(m => m.MytModule)
+  },
+  {
+    path: 'jdsn',
+    loadChildren: () => import('./jdsn/jdsn.module').then(m => m.JdsnModule)
+  },
+  {
+    path: '',
+    redirectTo: '',
+    pathMatch: 'full'
+  }
 ];
 
 @NgModule({

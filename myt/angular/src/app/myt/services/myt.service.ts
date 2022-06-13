@@ -1,15 +1,74 @@
 import { Injectable } from '@angular/core';
-
-import { Myt, MytCard, MytMessage } from "../models/myt.models";
-import { Observable, of } from "rxjs";
-import { DataService, WebSocketService } from "./shared.service";
-import { catchError, filter, map } from "rxjs/operators";
-import { environment } from "../../environments/environment";
+import { HttpClient } from '@angular/common/http';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from "@angular/router";
 import { CdkDragDrop, copyArrayItem, transferArrayItem } from "@angular/cdk/drag-drop";
+
+import { Observable, of } from 'rxjs';
+import { catchError, filter, map } from "rxjs/operators";
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
+
+import { environment } from "../../../environments/environment";
+import { Myt, MytCard, MytMessage } from "../models/myt.models";
 import { defaultMytCard } from "../core/myt.constants";
 
 export const WS_ENDPOINT = environment.wsEndpoint;
+
+
+@Injectable({
+  providedIn: 'root',
+})
+export class WebSocketService {
+  private ws: WebSocketSubject<any>;
+  // // @ts-ignore
+  // public messages = this.messagesSubject.pipe(concatAll(), catchError(e => { throw e }));
+
+  constructor() {
+  }
+
+  connect(wsEndpoint: string): WebSocketSubject<any> {
+    if (!this.ws || this.ws.closed) {
+      this.ws = webSocket(wsEndpoint);
+    }
+    return this.ws;
+  }
+
+  sendMessage(msg: any) {
+    this.ws.next(msg);
+  }
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class MytDataService {
+  private apiUrl: string = 'api/'
+
+  constructor(private http: HttpClient) { }
+
+  getRoom(roomName: string): Observable<string> {
+    return this.http.get<string>(this.apiUrl + 'room/' + roomName)
+  }
+
+  addRoom(roomName: string): Observable<string> {
+    return this.http.post<any>(this.apiUrl + 'room/', {'name': roomName})
+  }
+
+  getAnnouncements(roomName: string): Observable<string[]> {
+    return this.http.get<string[]>(this.apiUrl + 'announcement/' + roomName)
+  }
+
+  getMyts(roomName: string): Observable<Myt[]> {
+    return this.http.get<Myt[]>(this.apiUrl + 'myt/' + roomName)
+  }
+
+  getMytCards(roomName: string): Observable<MytCard[]> {
+    return this.http.get<MytCard[]>(this.apiUrl + 'myt-card/' + roomName)
+  }
+
+  addMyts(myt: Myt, roomName: string): Observable<Myt> {
+    return this.http.post<Myt>(this.apiUrl + 'myt/' + roomName, myt)
+  }
+}
 
 @Injectable({
   providedIn: 'root',
@@ -145,7 +204,7 @@ export class MytDragDropService {
   providedIn: 'root',
 })
 export class CanActivateRoom implements CanActivate {
-  constructor(private dataService: DataService, private router: Router) {}
+  constructor(private dataService: MytDataService, private router: Router) {}
 
   canActivate(
     route: ActivatedRouteSnapshot,

@@ -5,7 +5,7 @@ import { NzMarks } from 'ng-zorro-antd/slider';
 import { Myt, MytCard } from "../../models/myt.models";
 import { sliderTextColor, legions, days, difficulties } from "../../core/myt.constants";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
-import {MytDragDropService, MytMessageService} from '../../services/myt.service';
+import { MytDragDropService, MytMessageService } from '../../services/myt.service';
 
 @Component({
   selector: 'myt-card',
@@ -20,7 +20,7 @@ export class MytCardComponent implements OnInit {
   difficulties: string[] = difficulties
   marks: NzMarks
 
-  constructor(private mytMessageService:MytMessageService,
+  constructor(private mytMessageService: MytMessageService,
               private mytDragDropService: MytDragDropService) { }
 
   ngOnInit(): void {

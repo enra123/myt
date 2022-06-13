@@ -6,10 +6,10 @@ import { classKRMap, defaultMyt } from "../../core/myt.constants";
 
 @Component({
   selector: 'myt',
-  templateUrl: './myt.component.html',
-  styleUrls: ['./myt.component.scss']
+  templateUrl: './myt-badge.component.html',
+  styleUrls: ['./myt-badge.component.scss']
 })
-export class MytComponent implements OnInit {
+export class MytBadgeComponent implements OnInit {
   @Input() myt: Myt = defaultMyt
   @Input() size: string = 'normal'
 

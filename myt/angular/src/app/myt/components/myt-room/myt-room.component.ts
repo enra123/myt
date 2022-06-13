@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { rippleColor } from "../../core/myt.constants";
-import { DataService } from "../../services/shared.service";
+import { MytDataService } from "../../services/myt.service";
 
 import { Router } from '@angular/router';
 
@@ -14,7 +14,7 @@ export class MytRoomComponent implements OnInit {
   loading: boolean = false
   roomName: string = ''
 
-  constructor(private dataService: DataService, private router: Router) { }
+  constructor(private dataService: MytDataService, private router: Router) { }
 
   ngOnInit(): void {
   }

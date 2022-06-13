@@ -5,10 +5,9 @@ import { NgxMasonryComponent, NgxMasonryOptions } from 'ngx-masonry';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
-import { DataService } from "../../services/shared.service";
 import { Myt, MytCard, MytMessage } from "../../models/myt.models";
 import { badgeColors, rippleColor, defaultMytCard, defaultMyt } from "../../core/myt.constants";
-import { MytDragDropService, MytMessageService } from '../../services/myt.service';
+import { MytDragDropService, MytMessageService, MytDataService } from '../../services/myt.service';
 import { first, switchMap } from "rxjs/operators";
 import { MytDialogComponent } from "../myt-dialog/myt-dialog.component";
 
@@ -40,7 +39,7 @@ export class MytDashboardComponent implements OnInit {
   connectedUserNum: number
   roomName: string
 
-  constructor(private dataService: DataService,
+  constructor(private dataService: MytDataService,
               private mytMessageService: MytMessageService,
               private mytDragDropService: MytDragDropService,
               private snackBar: MatSnackBar,
