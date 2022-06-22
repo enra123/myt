@@ -17,6 +17,8 @@ export class MytAccordComponent extends MytCardComponent {
     this.setTimeSliderMarksDefault();
   }
 
+  ngDoCheck() {}
+
   legionOnChange() {
     this.cardValueOnChange('legion', this.mytCard.legion);
   }

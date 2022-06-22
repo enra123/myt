@@ -1,11 +1,14 @@
-import {Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import {Component, Input, OnInit, ElementRef, ViewChild } from '@angular/core';
 
 import { NzMarks } from 'ng-zorro-antd/slider';
+import { Subject, fromEvent } from "rxjs";
+import { debounceTime, distinctUntilChanged, filter } from "rxjs/operators";
 
 import { Myt, MytCard } from "../../models/myt.models";
 import { sliderTextColor, legions, days, difficulties } from "../../core/myt.constants";
 import { CdkDragDrop } from "@angular/cdk/drag-drop";
 import { MytDragDropService, MytMessageService } from '../../services/myt.service';
+
 
 @Component({
   selector: 'myt-card',
@@ -14,21 +17,53 @@ import { MytDragDropService, MytMessageService } from '../../services/myt.servic
 })
 export class MytCardComponent implements OnInit {
   @Input() mytCard: MytCard
+  @ViewChild('legionInput', {static: true})
+  legionInput: ElementRef
   legions: string[] = legions
+  oldLegion: string = ''
+  customLegionChange = new Subject<string>()
+  debounceDueTime: number = 1000
   legionIndexSelected: number = 0
   days: string[] = days
   difficulties: string[] = difficulties
   marks: NzMarks
 
   constructor(private mytMessageService: MytMessageService,
-              private mytDragDropService: MytDragDropService) { }
+              private mytDragDropService: MytDragDropService) {}
 
   ngOnInit(): void {
-    this.setTimeSliderMarksDefault();
+    this.setTimeSliderMarksDefault()
+    this.updateSelectedLegionProperties()
+
+    // ngModelOnChange not working as expected with korean input (not detecting character in 'building')
+    // thus, natively binding keyup event of the input el and watching it changing with debounce time
+    fromEvent(this.legionInput.nativeElement,'keyup').pipe(
+      filter(Boolean),
+      debounceTime(this.debounceDueTime),
+      distinctUntilChanged()
+    ).subscribe(e => {
+      this.mytCard.legion = this.legionInput.nativeElement.value
+      this.cardValueOnChange('legion', this.mytCard.legion)
+    });
+  }
+
+  ngDoCheck() {
+    this.updateSelectedLegionProperties()
   }
 
   onDrop(event: CdkDragDrop<Myt[]>) {
     this.mytDragDropService.onDrop(event)
+  }
+
+  protected updateSelectedLegionProperties() {
+    if (this.oldLegion === this.mytCard.legion) return
+
+    this.legionIndexSelected = this.legions.indexOf(this.mytCard.legion)
+    if (this.legionIndexSelected < 0) {
+      this.legionIndexSelected = this.legions.length
+      this.legionInput.nativeElement.value = this.mytCard.legion
+    }
+    this.oldLegion = this.mytCard.legion
   }
 
   protected setTimeSliderMarksDefault() {
@@ -79,21 +114,26 @@ export class MytCardComponent implements OnInit {
     return value + ':00';
   }
 
-  showPrevLegion(): void {
-    this.legionIndexSelected = this.legionIndexSelected - 1;
-    if (this.legionIndexSelected < 0) {
-      this.legionIndexSelected = this.legions.length - 1;
+  selectedLegionClass(): string {
+    if (this.legions.includes(this.mytCard.legion)) {
+      return this.mytCard.legion
     }
-    this.mytCard.legion = this.legions[this.legionIndexSelected];
-    this.cardValueOnChange('legion', this.mytCard.legion);
+    return 'custom'
   }
 
-  showNextLegion(): void {
-    this.legionIndexSelected = this.legionIndexSelected + 1;
-    if (this.legionIndexSelected >= this.legions.length) {
+  changeLegion(direction: number): void {
+    this.legionIndexSelected = this.legionIndexSelected + direction;
+    if (this.legionIndexSelected < 0) {
+      this.legionIndexSelected = this.legions.length;
+      this.mytCard.legion = this.legionInput.nativeElement.value
+    } else if (this.legionIndexSelected > this.legions.length) {
       this.legionIndexSelected = 0;
     }
-    this.mytCard.legion = this.legions[this.legionIndexSelected];
+    if (this.legionIndexSelected === this.legions.length) {
+      this.mytCard.legion = this.legionInput.nativeElement.value
+    } else {
+      this.mytCard.legion = this.legions[this.legionIndexSelected];
+    }
     this.cardValueOnChange('legion', this.mytCard.legion);
   }
 

@@ -58,21 +58,37 @@
   background-size: 400%;
   border-radius: 8px;
   transition: all 0.2s ease;
+  position: relative;
 
-  &.valtan {
-    background-position: 105% 11%;
+  .custom-legion-container {
+    position: absolute;
+    background: rgba(0,0,0,0.4);
+    margin-left: auto;
+    margin-right: auto;
+    left: 4px;
+    right: 0;
+    border-radius: 0.4285rem;
+    width: 70%;
+    height: 100%;
+
+    .form-control {
+      font-size: 1.3em;
+      padding: 6px;
+      text-align: center;
+      position: relative;
+      top: 50%;
+      transform: translateY(-50%);
+    }
   }
 
-  &.vykas {
-    background-position: 83% 11%;
+  &.custom {
+    background-image: url("../../../../assets/images/custom-legion.png");
+    background-position: center;
+    background-size: 200%;
   }
 
   &.kakul-saydon {
     background-position: -6% 11%;
-  }
-
-  &.brelshaza {
-    background-position: 61% 11%;
   }
 
   &.akkan {
@@ -83,8 +99,20 @@
     background-position: 39% 11%;
   }
 
+  &.brelshaza {
+    background-position: 61% 11%;
+  }
+
+  &.vykas {
+    background-position: 83% 11%;
+  }
+
+  &.valtan {
+    background-position: 105% 11%;
+  }
+
   mat-icon {
-    padding-top: 42%;
+    padding-top: 40%;
     height: 100%;
     text-shadow: 1px 2px black;
 

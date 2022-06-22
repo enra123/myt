@@ -1,8 +1,11 @@
 <div class="card card-chart">
   <div class="card-header card-header-icon">
-    <div class="card-icon legion-icon" [ngClass]="mytCard.legion">
-      <mat-icon (click)="showPrevLegion()">navigate_before</mat-icon>
-      <mat-icon (click)="showNextLegion()">navigate_next</mat-icon>
+    <div class="card-icon legion-icon" [ngClass]="selectedLegionClass()">
+      <div [hidden]="legionIndexSelected!=legions.length" class="custom-legion-container">
+        <input type="text" name="clegion" maxlength="3" class="form-control" #legionInput>
+      </div>
+      <mat-icon (click)="changeLegion(-1)">navigate_before</mat-icon>
+      <mat-icon (click)="changeLegion(1)">navigate_next</mat-icon>
     </div>
 
     <div class="card-options">

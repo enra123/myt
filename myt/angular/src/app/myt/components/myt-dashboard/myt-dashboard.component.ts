@@ -5,10 +5,11 @@ import { NgxMasonryComponent, NgxMasonryOptions } from 'ngx-masonry';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
+import { first, switchMap } from "rxjs/operators";
+
 import { Myt, MytCard, MytMessage } from "../../models/myt.models";
 import { badgeColors, rippleColor, defaultMytCard, defaultMyt } from "../../core/myt.constants";
 import { MytDragDropService, MytMessageService, MytDataService } from '../../services/myt.service';
-import { first, switchMap } from "rxjs/operators";
 import { MytDialogComponent } from "../myt-dialog/myt-dialog.component";
 
 
@@ -67,10 +68,12 @@ export class MytDashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.fetchData();
+    this.fetchData()
   }
 
   private fetchData() {
+    this.loading = true
+    this.loadingNewCard = true
     this.dataService.getMyts(this.roomName).pipe(
       switchMap(myts => {
         this.myts = myts;
@@ -89,6 +92,8 @@ export class MytDashboardComponent implements OnInit {
       this.mytCards.forEach((mytCard) => {
         this.setMytsColors(mytCard.myts);
       });
+      this.loading = false
+      this.loadingNewCard = false
     })
   }
 
