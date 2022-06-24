@@ -1,6 +1,7 @@
 .wheel-wrapper {
   text-align: center;
   margin-top: 2em;
+  overflow: hidden;
 }
 
 .arrow-down {
@@ -26,6 +27,12 @@
   color: grey;
   font-size: 1.3em;
   margin-bottom: 2px;
+}
+
+.disclaimer {
+  margin-top: 25px;
+  text-align: center;
+  color: #8b92a9;
 }
 
 
