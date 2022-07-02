@@ -14,6 +14,7 @@ export class SpinningWheelComponent implements AfterViewInit {
   public MINCYCLE: number = 3
   public number: number = 0
   public canvasLength: number = 350
+  public angleTest: number = 0
   private readonly probabilitiesCumulative: number[]
   private readonly probabilityDifferences: number[]
   private velocity: number
@@ -22,6 +23,7 @@ export class SpinningWheelComponent implements AfterViewInit {
   private frame: number = 0
   private then: number = 0
   private fpsInterval = 1000/60
+  private hueRatioFactor = 2.9 // 3.6 for complete hue cycle 0 ~ 360
 
   constructor() {
     // Values from Lost Ark official data
@@ -71,8 +73,8 @@ export class SpinningWheelComponent implements AfterViewInit {
   }
 
   /* receiving 0 ~ 99.99999 and returning matching number referring to probabilitiesCumulative 0 ~ 100.00
-     e.g. 22.9 -> 10 * 3.6, 43 -> 19.3228 * 3.6, 96.8 -> 70.507 * 3.6,
-          98.43 -> 83.1068 * 3.6, 99.94 -> 99.3023 * 3.6
+     e.g. 22.9 -> 10, 43 -> 19.3228, 96.8 -> 70.507,
+          98.43 -> 83.1068, 99.94 -> 99.3023
   */
   private getNumberFromProbability(p: number): number {
     const i = this.probabilitiesCumulative.findIndex((e) => { // guaranteed i > 0
@@ -88,10 +90,6 @@ export class SpinningWheelComponent implements AfterViewInit {
     return (i - 1) * 10 + (p - m) / d * n
   }
 
-  private getAngleFromProbability(p: number): number {
-    return 3.6 * this.getNumberFromProbability(p)
-  }
-
   private getInitialVelocityFromNumber(x: number): number {
     let ta = x / 100 * 360 + 0.1 // target angle + buffer
     /* desired distance / velocity =  frictionFactor(pre-calculated in the constructor)
@@ -100,8 +98,8 @@ export class SpinningWheelComponent implements AfterViewInit {
     return (360 * this.MINCYCLE + ta) / this.frictionFactor
   }
 
-  private setDisplayNumber() {
-    const a = this.angle % 360
+  private setDisplayNumber(angle: number) {
+    const a = angle % 360
     this.number = Math.floor(this.getNumberFromProbability(a / 360 * 100))
   }
 
@@ -136,9 +134,10 @@ export class SpinningWheelComponent implements AfterViewInit {
     for (let x = 180; x < 540; x += 0.1) { // starting from 12 o'clock and clockwise
       this.ctx.beginPath()
       this.ctx.moveTo(radius, radius)
-      let hue = this.getAngleFromProbability((x - 180) / 3.6)
-      if (hue >= 36 && hue % 36 < 0.1 ) { // every 10p line stands out
-        hue = 30
+      let hue = this.hueRatioFactor * this.getNumberFromProbability((x - 180) / 3.6)
+      const hue10p = this.hueRatioFactor * 10
+      if (hue >= hue10p && hue % hue10p < 0.1 ) { // every 10p line stands out
+        hue = 33
       }
       if (x > 539.8) { // 100 part stands out as well
         hue = 56
@@ -155,7 +154,7 @@ export class SpinningWheelComponent implements AfterViewInit {
     this.velocity *= this.FRICTION
     this.angle += this.velocity
     this.ctx.canvas.style.transform = 'rotate(-' + (this.angle % 360) + 'deg)'
-    this.setDisplayNumber()
+    this.setDisplayNumber(this.angle)
     this.frame--
   }
 
@@ -199,6 +198,14 @@ export class SpinningWheelComponent implements AfterViewInit {
       this.canvasLength = length
       this.drawWheel()
     }
+  }
+
+  setCanvasManually() {
+    if (this.angleTest < 0) this.angleTest = 360
+    if (this.angleTest > 360) this.angleTest = 0
+    this.ctx.canvas.style.transform = 'rotate(0deg)'
+    this.ctx.canvas.style.transform = 'rotate(-' + (this.angleTest % 360) + 'deg)'
+    this.setDisplayNumber(this.angleTest)
   }
 
   @HostListener('window:resize', ['$event'])
