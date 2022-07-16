@@ -290,7 +290,7 @@ export class MytDashboardComponent implements OnInit {
   // cdkDragDrop didn't have a clean way of modifying being-dragged element's style based on drop container
   mytDeleteExited(event: CdkDragExit<any>) {
     const preview = new ElementRef<HTMLElement>(document.querySelector('.cdk-drag.cdk-drag-preview') as HTMLElement);
-    this.renderer.removeClass(preview.nativeElement.children[0], 'mini delete');
+    this.renderer.removeClass(preview.nativeElement.children[0], 'mini');
     this.renderer.removeClass(preview.nativeElement.children[0], 'delete');
   }
 

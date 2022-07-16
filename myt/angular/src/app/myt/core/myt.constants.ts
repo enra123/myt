@@ -35,6 +35,7 @@ export const difficulties: string[] = [
   '헬'
 ]
 export const classKRMap: Record<string, string> = {
+  기상술사: 'aeromancer',
   아르카나: 'arcana',
   바드: 'bard',
   배틀마스터: 'battle-master',

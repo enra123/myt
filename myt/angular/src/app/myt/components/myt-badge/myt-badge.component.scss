@@ -108,6 +108,9 @@
     background-size: contain;
     background-repeat: no-repeat;
 
+    &.aeromancer {
+      background-image: url("../../../../assets/icons/aeromancer.png");
+    }
     &.arcana {
       background-image: url("../../../../assets/icons/arcana.png");
     }
