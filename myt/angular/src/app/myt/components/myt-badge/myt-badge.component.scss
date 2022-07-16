@@ -271,6 +271,17 @@
     }
   }
 
+  &.delete {
+    .badge-content {
+      &__top {
+        text-decoration: line-through;
+      }
+      &__belt span {
+        text-decoration: line-through;
+      }
+    }
+  }
+
 }
 
 

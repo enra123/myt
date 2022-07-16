@@ -1,12 +1,12 @@
 import {Component, Input, OnInit, ElementRef, ViewChild } from '@angular/core';
 
 import { NzMarks } from 'ng-zorro-antd/slider';
-import { Subject, fromEvent } from "rxjs";
-import { debounceTime, distinctUntilChanged, filter } from "rxjs/operators";
+import { Subject, fromEvent } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 
-import { Myt, MytCard } from "../../models/myt.models";
-import { sliderTextColor, legions, days, difficulties } from "../../core/myt.constants";
-import { CdkDragDrop } from "@angular/cdk/drag-drop";
+import { Myt, MytCard } from '../../models/myt.models';
+import { sliderTextColor, legions, days, difficulties } from '../../core/myt.constants';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { MytDragDropService, MytMessageService } from '../../services/myt.service';
 
 
@@ -20,10 +20,10 @@ export class MytCardComponent implements OnInit {
   @ViewChild('legionInput', {static: true})
   legionInput: ElementRef
   legions: string[] = legions
-  oldLegion: string = ''
+  oldLegion = ''
   customLegionChange = new Subject<string>()
-  debounceDueTime: number = 1000
-  legionIndexSelected: number = 0
+  debounceDueTime = 1000
+  legionIndexSelected = 0
   days: string[] = days
   difficulties: string[] = difficulties
   marks: NzMarks
@@ -37,7 +37,7 @@ export class MytCardComponent implements OnInit {
 
     // ngModelOnChange not working as expected with korean input (not detecting character in 'building')
     // thus, natively binding keyup event of the input el and watching it changing with debounce time
-    fromEvent(this.legionInput.nativeElement,'keyup').pipe(
+    fromEvent(this.legionInput.nativeElement, 'keyup').pipe(
       filter(Boolean),
       debounceTime(this.debounceDueTime),
       distinctUntilChanged()
@@ -47,6 +47,7 @@ export class MytCardComponent implements OnInit {
     });
   }
 
+  // tslint:disable-next-line:use-lifecycle-interface
   ngDoCheck() {
     this.updateSelectedLegionProperties()
   }
@@ -56,7 +57,7 @@ export class MytCardComponent implements OnInit {
   }
 
   protected updateSelectedLegionProperties() {
-    if (this.oldLegion === this.mytCard.legion) return
+    if (this.oldLegion === this.mytCard.legion) { return }
 
     this.legionIndexSelected = this.legions.indexOf(this.mytCard.legion)
     if (this.legionIndexSelected < 0) {
@@ -88,7 +89,7 @@ export class MytCardComponent implements OnInit {
       }
     };
     for (let i = 13; i < 24; i++) {
-      if ( i == 18) {
+      if ( i === 18) {
         continue;
       }
       this.marks[i] = {
@@ -105,8 +106,8 @@ export class MytCardComponent implements OnInit {
     this.mytMessageService.sendMessage({
       name: this.mytCard.name,
       action: 'edit',
-      target: target,
-      value: value
+      target,
+      value
     });
   }
 

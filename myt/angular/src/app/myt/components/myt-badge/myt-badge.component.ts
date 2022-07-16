@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 
-import { Myt } from "../../models/myt.models";
-import { classKRMap, defaultMyt } from "../../core/myt.constants";
+import { Myt } from '../../models/myt.models';
+import { classKRMap, defaultMyt } from '../../core/myt.constants';
 
 
 @Component({
@@ -11,7 +11,7 @@ import { classKRMap, defaultMyt } from "../../core/myt.constants";
 })
 export class MytBadgeComponent implements OnInit {
   @Input() myt: Myt = defaultMyt
-  @Input() size: string = 'normal'
+  @Input() size = 'normal'
 
   constructor() { }
 
@@ -19,7 +19,7 @@ export class MytBadgeComponent implements OnInit {
   }
 
   getClassNameFromRoleKR(): string {
-    return <string>classKRMap[this.myt.role]
+    return classKRMap[this.myt.role] as string
   }
 
 }

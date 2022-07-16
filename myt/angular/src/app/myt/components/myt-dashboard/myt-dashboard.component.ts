@@ -1,16 +1,16 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from "@angular/router";
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import {Component, ElementRef, OnInit, Renderer2, ViewChild} from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { CdkDragDrop, CdkDragExit, CdkDragEnter } from '@angular/cdk/drag-drop';
 import { NgxMasonryComponent, NgxMasonryOptions } from 'ngx-masonry';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
-import { first, switchMap } from "rxjs/operators";
+import { first, switchMap } from 'rxjs/operators';
 
-import { Myt, MytCard, MytMessage } from "../../models/myt.models";
-import { badgeColors, rippleColor, defaultMytCard, defaultMyt } from "../../core/myt.constants";
+import { Myt, MytCard, MytMessage } from '../../models/myt.models';
+import { badgeColors, rippleColor, defaultMytCard, defaultMyt } from '../../core/myt.constants';
 import { MytDragDropService, MytMessageService, MytDataService } from '../../services/myt.service';
-import { MytDialogComponent } from "../myt-dialog/myt-dialog.component";
+import { MytDialogComponent } from '../myt-dialog/myt-dialog.component';
 
 
 @Component({
@@ -20,34 +20,35 @@ import { MytDialogComponent } from "../myt-dialog/myt-dialog.component";
 })
 export class MytDashboardComponent implements OnInit {
   @ViewChild(NgxMasonryComponent) masonry: NgxMasonryComponent | undefined;
-  ANNOUNCEMENT_MAX_SIZE: number = 5
-  rippleColor: string = rippleColor
-  btnClass: string = ''
-  myts: Myt[] = []
-  dialogRef: MatDialogRef<MytDialogComponent>
-  announcements: string[] = []
-  loadingNewCard: boolean = false  // for adding a new card
-  mytCards: MytCard[] = []
-  characterName: string = ''
-  colorIndex: number = 0
-  mytColorMap: Record<number, string> = {}
+  ANNOUNCEMENT_MAX_SIZE = 5;
+  rippleColor: string = rippleColor;
+  btnClass = '';
+  myts: Myt[] = [];
+  dialogRef: MatDialogRef<MytDialogComponent>;
+  announcements: string[] = [];
+  loadingNewCard = false;  // for adding a new card
+  mytCards: MytCard[] = [];
+  characterName = '';
+  colorIndex = 0;
+  mytColorMap: Record<number, string> = {};
   ngxMasonryOptions: NgxMasonryOptions = {
     gutter: 0,
     percentPosition: true,
-  }
-  loading: boolean = false
-  displayOption: string = 'card'
-  connectedUserNum: number
-  roomName: string
+  };
+  loading = false;
+  displayOption = 'card';
+  connectedUserNum: number;
+  roomName: string;
 
   constructor(private dataService: MytDataService,
               private mytMessageService: MytMessageService,
               private mytDragDropService: MytDragDropService,
               private snackBar: MatSnackBar,
               private route: ActivatedRoute,
+              private renderer: Renderer2,
               private dialog: MatDialog) {
     this.route.params.pipe(first()).subscribe( (params) => {
-      this.roomName = params['roomName'];
+      this.roomName = params.roomName;
       mytMessageService.connect(this.roomName);
       mytMessageService.mytMessages.subscribe(
           msg => this.processMytMessage(msg),
@@ -68,12 +69,12 @@ export class MytDashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.fetchData()
+    this.fetchData();
   }
 
   private fetchData() {
-    this.loading = true
-    this.loadingNewCard = true
+    this.loading = true;
+    this.loadingNewCard = true;
     this.dataService.getMyts(this.roomName).pipe(
       switchMap(myts => {
         this.myts = myts;
@@ -92,20 +93,20 @@ export class MytDashboardComponent implements OnInit {
       this.mytCards.forEach((mytCard) => {
         this.setMytsColors(mytCard.myts);
       });
-      this.loading = false
-      this.loadingNewCard = false
-    })
+      this.loading = false;
+      this.loadingNewCard = false;
+    });
   }
 
   private updateAnnouncement(announcement: string) {
     if (this.announcements.length >= this.ANNOUNCEMENT_MAX_SIZE) {
-      this.announcements.shift()
+      this.announcements.shift();
     }
-    this.announcements.push(announcement)
+    this.announcements.push(announcement);
     if (this.dialogRef && this.dialogRef.componentInstance) {
       this.dialogRef.componentInstance.data = this.announcements;
     } else {
-      this.btnClass = 'btn-alarmed'
+      this.btnClass = 'btn-alarmed';
     }
   }
 
@@ -131,14 +132,24 @@ export class MytDashboardComponent implements OnInit {
           this.reloadMasonryLayout();
         }
       } else if (message.action === 'delete') {
-        this.deleteCardByName(message.value);
+        if (message.target === 'myts') {
+          const myt = message.value;
+          if (this.myts.findIndex((m => m.character === myt.character)) === -1) {
+            return;
+          }
+          this.myts = this.myts.filter(
+            m => m.character !== myt.character
+          )
+        } else if (message.target === 'mytCards') {
+          this.deleteCardByName(message.value);
+        }
       }
     } else {
-      const mytCardIndex = this.mytCards.findIndex((card => card.name == message.name));
+      const mytCardIndex = this.mytCards.findIndex((card => card.name === message.name));
       if (mytCardIndex === -1) {
         return;
       }
-      let mytCard = this.mytCards[mytCardIndex];
+      const mytCard = this.mytCards[mytCardIndex];
       if (message.target === 'myts') {
         if (message.action === 'add') {
           if (!mytCard.myts.some(myt => myt.character === message.value.character)) {
@@ -146,8 +157,8 @@ export class MytDashboardComponent implements OnInit {
           }
         } else if (message.action === 'delete') {
           mytCard.myts = mytCard.myts.filter(
-            myt => myt.character != message.value.character
-          );
+            myt => myt.character !== message.value.character
+          )
         }
       } else {
         // @ts-ignore
@@ -165,7 +176,7 @@ export class MytDashboardComponent implements OnInit {
     if (color === '') {
       color = badgeColors[this.colorIndex];
       this.mytColorMap[myt.account] = color;
-      this.colorIndex = this.colorIndex + 1
+      this.colorIndex = this.colorIndex + 1;
       if (this.colorIndex >= badgeColors.length) {
         this.colorIndex = 0;
       }
@@ -176,7 +187,7 @@ export class MytDashboardComponent implements OnInit {
   private setMytsColors(myts: Myt[]): void {
     myts.forEach((myt) => {
       this.setMytColor(myt);
-    })
+    });
   }
 
   reloadMasonryLayout() {
@@ -190,7 +201,7 @@ export class MytDashboardComponent implements OnInit {
       position: {top: '0'},
       data: this.announcements,
     });
-    this.btnClass = ''
+    this.btnClass = '';
   }
 
   openErrorBar(message: string) {
@@ -205,7 +216,7 @@ export class MytDashboardComponent implements OnInit {
   }
 
   getMytColor(myt: Myt): string {
-    let color = this.mytColorMap[myt.account];
+    const color = this.mytColorMap[myt.account];
     if (color === undefined) {
       return '';
     }
@@ -216,11 +227,15 @@ export class MytDashboardComponent implements OnInit {
     if (this.loadingNewCard) {
       return;
     }
-    this.mytDragDropService.onDrop(event)
+    this.mytDragDropService.onDrop(event);
     this.loadingNewCard = true;
   }
 
   onDropSource(event: CdkDragDrop<Myt[]>) {
+  }
+
+  onDropDelete(event: CdkDragDrop<Myt[]>) {
+    this.mytDragDropService.onDrop(event);
   }
 
   addMyt(): void {
@@ -229,10 +244,10 @@ export class MytDashboardComponent implements OnInit {
       return;
     }
     this.loading = true;
-    let myt = <Myt>{
+    const myt = {
       ...defaultMyt,
       character: this.characterName,
-    }
+    } as Myt;
     // TODO: making this ws instead of http, currently it's doing two round-trips
     this.dataService.addMyts(myt, this.roomName)
       .subscribe({
@@ -263,6 +278,20 @@ export class MytDashboardComponent implements OnInit {
       target: 'mytCards',
       value: mytCard.name
     });
+  }
+
+  // cdkDragDrop didn't have a clean way of modifying being-dragged element's style based on drop container
+  mytDeleteEntered(event: CdkDragEnter<any>) {
+    const preview = new ElementRef<HTMLElement>(document.querySelector('.cdk-drag.cdk-drag-preview') as HTMLElement);
+    this.renderer.addClass(preview.nativeElement.children[0], 'mini');
+    this.renderer.addClass(preview.nativeElement.children[0], 'delete');
+  }
+
+  // cdkDragDrop didn't have a clean way of modifying being-dragged element's style based on drop container
+  mytDeleteExited(event: CdkDragExit<any>) {
+    const preview = new ElementRef<HTMLElement>(document.querySelector('.cdk-drag.cdk-drag-preview') as HTMLElement);
+    this.renderer.removeClass(preview.nativeElement.children[0], 'mini delete');
+    this.renderer.removeClass(preview.nativeElement.children[0], 'delete');
   }
 
 }

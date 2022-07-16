@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import {Myt} from "../models/myt.models";
+import {Myt} from '../models/myt.models';
 
 
 @Pipe({

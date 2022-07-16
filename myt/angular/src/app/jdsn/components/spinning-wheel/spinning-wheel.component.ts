@@ -22,7 +22,7 @@ export class SpinningWheelComponent implements AfterViewInit {
   private frictionFactor: number
   private frame: number = 0
   private then: number = 0
-  private fpsInterval = 1000/60
+  private fpsInterval = 1000 / 60
   private hueRatioFactor = 2.9 // 3.6 for complete hue cycle 0 ~ 360
 
   constructor() {
@@ -91,7 +91,7 @@ export class SpinningWheelComponent implements AfterViewInit {
   }
 
   private getInitialVelocityFromNumber(x: number): number {
-    let ta = x / 100 * 360 + 0.1 // target angle + buffer
+    const ta = x / 100 * 360 + 0.1 // target angle + buffer
     /* desired distance / velocity =  frictionFactor(pre-calculated in the constructor)
        initial velocity = desired distance / frictionFactor
      */
@@ -107,8 +107,8 @@ export class SpinningWheelComponent implements AfterViewInit {
     return deg * Math.PI / 180
   }
 
-  getNumberStyle(): Object {
-    if (this.number == 100){
+  getNumberStyle(): object {
+    if (this.number === 100){
       return {color: '#ff9a30', fontWeight: 800}
     }
     if (this.number > 89){
@@ -130,7 +130,7 @@ export class SpinningWheelComponent implements AfterViewInit {
   }
 
   drawWheel() {
-    let radius = this.ctx.canvas.width / 2
+    const radius = this.ctx.canvas.width / 2
     for (let x = 180; x < 540; x += 0.1) { // starting from 12 o'clock and clockwise
       this.ctx.beginPath()
       this.ctx.moveTo(radius, radius)
@@ -142,7 +142,7 @@ export class SpinningWheelComponent implements AfterViewInit {
       if (x > 539.8) { // 100 part stands out as well
         hue = 56
       }
-      this.ctx.strokeStyle = "hsla(" + hue + ", 100%, 50%, 1.0)"
+      this.ctx.strokeStyle = 'hsla(' + hue + ', 100%, 50%, 1.0)'
       this.ctx.lineTo(radius * Math.sin(-this.degToRad(x)) + radius,
                       radius * Math.cos(-this.degToRad(x)) + radius);
       this.ctx.stroke();
@@ -150,7 +150,7 @@ export class SpinningWheelComponent implements AfterViewInit {
   }
 
   rotate() {
-    if (!this.frame) return
+    if (!this.frame) { return }
     this.velocity *= this.FRICTION
     this.angle += this.velocity
     this.ctx.canvas.style.transform = 'rotate(-' + (this.angle % 360) + 'deg)'
@@ -161,8 +161,8 @@ export class SpinningWheelComponent implements AfterViewInit {
   // rotate() the wheel in fixed fps
   update() {
     requestAnimationFrame(this.update.bind(this))
-    let now = Date.now();
-    let elapsed = now - this.then;
+    const now = Date.now();
+    const elapsed = now - this.then;
 
     // if enough time has elapsed, draw the next frame
     if (elapsed > this.fpsInterval) {
@@ -172,7 +172,7 @@ export class SpinningWheelComponent implements AfterViewInit {
   }
 
   spin() {
-    if (this.frame) return
+    if (this.frame) { return }
     // reset
     this.angle = 0
     this.frame = this.TOTALFRAME
@@ -192,7 +192,7 @@ export class SpinningWheelComponent implements AfterViewInit {
     if (windowWidth > 535) {
       length = 500
     }
-    if (length != this.canvasLength) {
+    if (length !== this.canvasLength) {
       this.ctx.canvas.width = length
       this.ctx.canvas.height = length
       this.canvasLength = length
@@ -201,8 +201,8 @@ export class SpinningWheelComponent implements AfterViewInit {
   }
 
   setCanvasManually() {
-    if (this.angleTest < 0) this.angleTest = 360
-    if (this.angleTest > 360) this.angleTest = 0
+    if (this.angleTest < 0) { this.angleTest = 360 }
+    if (this.angleTest > 360) { this.angleTest = 0 }
     this.ctx.canvas.style.transform = 'rotate(0deg)'
     this.ctx.canvas.style.transform = 'rotate(-' + (this.angleTest % 360) + 'deg)'
     this.setDisplayNumber(this.angleTest)

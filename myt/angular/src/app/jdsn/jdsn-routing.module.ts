@@ -1,6 +1,6 @@
 import { Injectable, NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { SpinningWheelComponent } from "./components/spinning-wheel/spinning-wheel.component";
+import { SpinningWheelComponent } from './components/spinning-wheel/spinning-wheel.component';
 
 
 const routes: Routes = [

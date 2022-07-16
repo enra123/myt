@@ -63,10 +63,13 @@ def process_myt_message_for_db(room, message):
 
     if 'source' in name:
         if action == 'delete':
-            card_id = int(value.split('-')[-1])
-            myt_card = MytCard.objects.filter(id=card_id, room=room).first()
-            if myt_card:
-                myt_card.delete()
+            if target == 'mytCards':
+                card_id = int(value.split('-')[-1])
+                myt_card = MytCard.objects.filter(id=card_id, room=room).first()
+                if myt_card:
+                    myt_card.delete()
+            elif target == 'myts':
+                Myt.objects.filter(character=value['character']).first().rooms.remove(room)
         elif action == 'add' and target != 'myts':
             myt_characters = [myt['character'] for myt in value.get('myts', [])]
             myts = Myt.objects.filter(character__in=myt_characters)

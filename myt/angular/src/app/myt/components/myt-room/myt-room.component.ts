@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { rippleColor } from "../../core/myt.constants";
-import { MytDataService } from "../../services/myt.service";
+import { rippleColor } from '../../core/myt.constants';
+import { MytDataService } from '../../services/myt.service';
 
 import { Router } from '@angular/router';
 
@@ -20,7 +20,7 @@ export class MytRoomComponent implements OnInit {
   }
 
   addRoom(): void {
-    if (!this.roomName || this.loading) return
+    if (!this.roomName || this.loading) { return }
     this.loading = true
 
     this.dataService.addRoom(this.roomName)

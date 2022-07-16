@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from "@angular/router";
-import { CdkDragDrop, copyArrayItem, transferArrayItem } from "@angular/cdk/drag-drop";
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { CdkDragDrop, copyArrayItem, transferArrayItem } from '@angular/cdk/drag-drop';
 
 import { Observable, of } from 'rxjs';
-import { catchError, filter, map } from "rxjs/operators";
+import { catchError, filter, map } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
-import { environment } from "../../../environments/environment";
-import { Myt, MytCard, MytMessage } from "../models/myt.models";
-import { defaultMytCard } from "../core/myt.constants";
+import { environment } from '../../../environments/environment';
+import { Myt, MytCard, MytMessage } from '../models/myt.models';
+import { defaultMytCard } from '../core/myt.constants';
 
 export const WS_ENDPOINT = environment.wsEndpoint;
 
@@ -50,7 +50,7 @@ export class MytDataService {
   }
 
   addRoom(roomName: string): Observable<string> {
-    return this.http.post<any>(this.apiUrl + 'room/', {'name': roomName})
+    return this.http.post<any>(this.apiUrl + 'room/', {name: roomName})
   }
 
   getAnnouncements(roomName: string): Observable<string[]> {
@@ -87,7 +87,7 @@ export class MytMessageService {
     );
 
     this.mytMessages = messages.pipe(
-      filter(msg => (<MytMessage>msg).name !== undefined)
+      filter(msg => (msg as MytMessage).name !== undefined)
     );
 
     this.connectionNumbers = messages.pipe(
@@ -117,6 +117,7 @@ export class MytDragDropService {
   private getMytDragDropPreviousIndex(event: CdkDragDrop<Myt[]>) {
     // TODO: find the reasoon and fix this dirty work around
     // 'event.previousIndex' was meant to work but it's not giving the correct index
+    // thus, manually getting the right 'previousIndex'
     const droppedMytText = event.item.element.nativeElement.innerText.split('\n').pop();
     const previousIndex = event.previousContainer.data.findIndex(d => {
       return d.character === droppedMytText
@@ -135,6 +136,8 @@ export class MytDragDropService {
       type = 'add'
     } else if (idString.includes('card')) {
       type = 'card'
+    } else if (idString.includes('delete')) {
+      type = 'delete'
     }
 
     let cardName = idString;
@@ -145,8 +148,8 @@ export class MytDragDropService {
     }
 
     return {
-      type: type,
-      cardName: cardName
+      type,
+      cardName
     }
   }
 
@@ -155,27 +158,31 @@ export class MytDragDropService {
     const previousContainer = this.setContainerValues(event.previousContainer.id)
     const currentContainer = this.setContainerValues(event.container.id)
     const droppedMyt = event.previousContainer.data[previousIndex]
-    let mytMessages: MytMessage[] = []
+    const mytMessages: MytMessage[] = []
 
     switch (previousContainer.type.concat('->', currentContainer.type)) {
       case 'source->card':
-        if (event.container.data.some(myt => myt.character === droppedMyt.character)) break; // prevent duplicate
+        if (event.container.data.some(myt => myt.character === droppedMyt.character)) { break; } // prevent duplicate
         copyArrayItem(event.previousContainer.data, event.container.data, previousIndex, event.currentIndex)
         mytMessages.push({name: currentContainer.cardName, action: 'add', target: 'myts', value: droppedMyt})
         break
+      case 'source->delete':
+        event.previousContainer.data.splice(previousIndex, 1)
+        mytMessages.push({name: 'source', action: 'delete', target: 'myts', value: droppedMyt})
+        break
       case 'source->add': {
-        const mytCard = <MytCard>{
+        const mytCard = {
           ...defaultMytCard,
           myts: [droppedMyt]
-        }
+        } as MytCard
         mytMessages.push({name: 'source', action: 'add', target: 'mytCards', value: mytCard})
         break
       }
       case 'card->add': {
-        const mytCard = <MytCard>{
+        const mytCard = {
           ...event.item.data,
           myts: [droppedMyt]
-        }
+        } as MytCard
         mytMessages.push({name: 'source', action: 'add', target: 'mytCards', value: mytCard})
         break
       }
@@ -185,7 +192,7 @@ export class MytDragDropService {
           event.previousContainer.data.splice(previousIndex, 1)
           mytMessages.push({name: previousContainer.cardName, action: 'delete', target: 'myts', value: droppedMyt})
         } else {
-          if (event.container.data.some(myt => myt.character === droppedMyt.character)) break; // prevent duplicate
+          if (event.container.data.some(myt => myt.character === droppedMyt.character)) { break; } // prevent duplicate
           transferArrayItem(event.previousContainer.data, event.container.data, previousIndex, event.currentIndex)
           mytMessages.push({name: currentContainer.cardName, action: 'add', target: 'myts', value: droppedMyt})
           mytMessages.push({name: previousContainer.cardName, action: 'delete', target: 'myts', value: droppedMyt})
@@ -209,7 +216,7 @@ export class CanActivateRoom implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> {
-      return this.dataService.getRoom(route.params['roomName']).pipe(
+      return this.dataService.getRoom(route.params.roomName).pipe(
         map(_ => true),
         catchError(_ => {
           this.router.navigateByUrl('/myt');

@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  wsEndpoint: "wss://malange.me/ws/myt/"
+  wsEndpoint: 'wss://malange.me/ws/myt/'
 };

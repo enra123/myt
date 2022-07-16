@@ -28,7 +28,7 @@ class MytViewSet(generics.ListCreateAPIView, MytRoomMixin):
     serializer_class = MytSerializer
 
     def get_queryset(self):
-        return Myt.objects.filter(rooms__in=[self.get_room()], is_deleted=False)
+        return Myt.objects.filter(rooms__in=[self.get_room()], is_deleted=False).order_by('account')
 
     def get_serializer(self, *args, **kwargs):
         """

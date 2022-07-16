@@ -58,18 +58,18 @@ export const classKRMap: Record<string, string> = {
   서머너: 'summoner',
   워로드: 'warlord',
 }
-export const defaultMyt: Myt = <Myt>{
+export const defaultMyt: Myt = {
   character: '',
   level: 0,
   account: 0,
   role: '',
   color: '',
-}
-export const defaultMytCard = <MytCard>{
+} as Myt
+export const defaultMytCard = {
   name: 'myt-card-list-0',
   legion: 'kakul-saydon',
   day: '수',
   difficulty: '노',
   times: [18, 18],
   myts: []
-}
+} as MytCard

@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 
-import { rippleColor } from "../../core/myt.constants";
+import { rippleColor } from '../../core/myt.constants';
 import { MytMessageService } from '../../services/myt.service';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 

@@ -44,19 +44,21 @@
       }
     ],
     "no-console": [
-      true,
+      false,
       "debug",
       "info",
       "time",
       "timeEnd",
       "trace"
     ],
+    "no-debugger": false,
     "no-empty": false,
     "no-inferrable-types": [
-      true,
+      false,
       "ignore-params"
     ],
     "no-non-null-assertion": true,
+    "no-shadowed-variable": false,
     "no-redundant-jsdoc": true,
     "no-switch-case-fall-through": true,
     "no-var-requires": false,
@@ -68,11 +70,9 @@
       true,
       "single"
     ],
-    "semicolon": {
-      "options": [
-        "always"
-      ]
-    },
+    "semicolon": [
+      false
+    ],
     "space-before-function-paren": {
       "options": {
         "anonymous": "never",
@@ -83,7 +83,7 @@
       }
     },
     "typedef": [
-      true,
+      false,
       "call-signature"
     ],
     "typedef-whitespace": {
@@ -134,7 +134,7 @@
     "no-outputs-metadata-property": true,
     "template-banana-in-box": true,
     "template-no-negated-async": true,
-    "use-lifecycle-interface": true,
+    "use-lifecycle-interface": false,
     "use-pipe-transform-interface": true,
     "directive-selector": [
       true,
@@ -143,7 +143,7 @@
       "camelCase"
     ],
     "component-selector": [
-      true,
+      false,
       "element",
       "app",
       "kebab-case"

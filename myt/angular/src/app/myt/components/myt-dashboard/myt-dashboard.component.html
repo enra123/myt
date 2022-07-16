@@ -26,6 +26,14 @@
                 <mat-icon>add</mat-icon>
               </button>
             </form>
+            <div class="delete-myt">
+              <div cdkDropList id="myt-delete-myt" class="myt-delete"
+                   (cdkDropListDropped)="onDropDelete($event)"
+                   (cdkDropListEntered)="mytDeleteEntered($event)"
+                   (cdkDropListExited)="mytDeleteExited($event)">
+                <mat-icon>delete</mat-icon>
+              </div>
+            </div>
           </div>
 
           <div class="card-footer">
