@@ -37,7 +37,7 @@ export class MytDashboardComponent implements OnInit {
   };
   loading = false;
   displayOption = 'card';
-  connectedUserNum: number;
+  connectedUserNum: string;
   roomName: string;
 
   constructor(private dataService: MytDataService,
@@ -55,13 +55,21 @@ export class MytDashboardComponent implements OnInit {
           err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
         );
 
+      mytMessageService.errorMessages.subscribe(
+          msg => {
+            this.openErrorBar(msg.content)
+            this.loading = false
+          },
+          err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
+        );
+
       mytMessageService.connectionNumbers.subscribe(
-          msg => this.connectedUserNum = msg,
+          msg => this.connectedUserNum = msg.content,
           err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
         );
 
       mytMessageService.announcements.subscribe(
-          msg => this.updateAnnouncement(msg),
+          msg => this.updateAnnouncement(msg.content),
           err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
         );
     });
@@ -120,6 +128,7 @@ export class MytDashboardComponent implements OnInit {
           if (this.myts.findIndex((m => m.character === myt.character)) > -1) {
             return;
           }
+          if (myt.character === this.characterName) { this.loading = false }
           this.setMytColor(myt);
           this.myts.push(myt);
         } else if (message.target === 'mytCards') {
@@ -239,35 +248,36 @@ export class MytDashboardComponent implements OnInit {
   }
 
   addMyt(): void {
+    if (this.loading) { return }
     // Trying to add already existing
     if (this.myts.some(myt => myt.character === this.characterName)) {
-      return;
+      return
     }
-    this.loading = true;
+    this.loading = true
+
     const myt = {
       ...defaultMyt,
       character: this.characterName,
     } as Myt;
-    // TODO: making this ws instead of http, currently it's doing two round-trips
-    this.dataService.addMyts(myt, this.roomName)
-      .subscribe({
-        next: (myt: Myt) => {
-          this.loading = false;
-          this.myts.push(myt);
-          this.setMytColor(myt);
-          this.mytMessageService.sendMessage({
-            name: 'source',
-            action: 'add',
-            target: 'myts',
-            value: myt
-          });
-        },
-        error: () => {
-          this.loading = false;
-          this.openErrorBar('캐릭 못찾음');
-        },
-        complete: () => this.loading = false
-      });
+
+    // this.dataService.addMyts(myt, this.roomName)
+    //   .subscribe({
+    //     next: (myt: Myt) => {
+    //       this.loading = false;
+    //     },
+    //     error: () => {
+    //       this.loading = false;
+    //       this.openErrorBar('캐릭 못찾음');
+    //     },
+    //     complete: () => this.loading = false
+    //   });
+
+    this.mytMessageService.sendMessage({
+      name: 'source',
+      action: 'add',
+      target: 'myts',
+      value: myt
+    });
   }
 
   deleteCardOnClick(mytCard: MytCard): void {

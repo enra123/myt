@@ -22,4 +22,9 @@ export interface MytMessage {
   value: any;
 }
 
+export interface WsMessage {
+  type: string;
+  content: string;
+}
+
 

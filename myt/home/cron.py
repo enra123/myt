@@ -7,30 +7,69 @@ if __name__ == "__main__":
     django.setup()
 
 import logging
-from django.http import HttpResponseServerError
+import aiohttp
+import asyncio
+from channels.db import database_sync_to_async
 
-from myt.home.models import Myt, Room, Announcement
-from myt.home.utils import scrape_character_info_dict
+from django.db import transaction
+
+from myt.home.models import Myt, Announcement
+from myt.home.utils import scrape_character_info_dict_batch, CharacterNotFoundError
 
 logger = logging.getLogger(__name__)
 
 
+@database_sync_to_async
+def save_updated_myts(myt_dicts):
+    with transaction.atomic():
+        for myt_dict in myt_dicts:
+            if isinstance(myt_dict, CharacterNotFoundError):
+                continue
+            character = myt_dict['character']
+            level = myt_dict['level']
+            logger.info(f'{character}: {level}')
+            Myt.objects.filter(character=character).update(level=level)
+
+
+@database_sync_to_async
+def get_myt_characters():
+    myts = Myt.objects.all()
+    characters = [myt.character for myt in myts]
+    return characters
+
+
+async def fetch_and_update_myts():
+    characters = await get_myt_characters()
+
+    myt_dicts = []
+    async with aiohttp.ClientSession() as session:
+        tasks = [(scrape_character_info_dict_batch(character, session)) for character in characters]
+        myt_dicts.extend(await asyncio.gather(*tasks, return_exceptions=True))
+
+    await save_updated_myts(myt_dicts)
+
+
 def update_myts_info():
     logger.info("updating myts cron start")
-    myts = Myt.objects.all()
-
-    for myt in myts:
-        try:
-            updated_info_dict = scrape_character_info_dict(myt.character)
-        except HttpResponseServerError:
-            continue
-        level = updated_info_dict.get('level', myt.level)
-        if level != myt.level:
-            logger.info(f'{myt.character}: {myt.level}')
-            myt.level = level
-            myt.save()
-
+    asyncio.run(fetch_and_update_myts())
     logger.info("updating myts cron end")
+
+# def update_myts_info():
+#     logger.info("updating myts cron start")
+#     myts = Myt.objects.all()
+#
+#     for myt in myts:
+#         try:
+#             updated_info_dict = scrape_character_info_dict(myt.character)
+#         except CharacterNotFoundError:
+#             continue
+#         level = updated_info_dict.get('level', myt.level)
+#         if level != myt.level:
+#             logger.info(f'{myt.character}: {myt.level}')
+#             myt.level = level
+#             myt.save()
+#
+#     logger.info("updating myts cron end")
 
 
 def clear_announcements():
@@ -43,16 +82,3 @@ def clear_announcements():
 
     logger.info("cleared announcements")
 
-
-# TODO: fix room user_count numbers if things go wrong, but
-# channel-presence library is recommended for proper websocket groups management
-# NOT BEING USED ATM
-def reset_room_user_count():
-    logger.info("reset room cron start")
-    rooms = Room.objects.all()
-
-    for room in rooms:
-        room.user_count = 0
-        room.save()
-
-    logger.info("reset room cron end")

@@ -1,3 +1,4 @@
+import time
 from rest_framework import generics, status, mixins
 from rest_framework.response import Response
 
@@ -39,18 +40,18 @@ class MytViewSet(generics.ListCreateAPIView, MytRoomMixin):
         kwargs.setdefault('context', self.get_serializer_context())
 
         method = self.request.method.lower()
+        # POST not being used atm
         if method == 'post':
             if self.request.data.get('level'):  # already registered myt
                 return HttpResponseBadRequest('Room not found')
 
             kwargs['data'] = scrape_character_info_dict(self.request.data.get('character'))
             kwargs['data']['rooms'] = [self.kwargs['room_name']]
-
             return serializer_class(*args, **kwargs)
         else:  # get
             return serializer_class(*args, **kwargs)
 
-    # TODO: making this ws instead of http, currently it's doing two round-trips
+    # not being used atm
     def create(self, request, *args, **kwargs):
         """
         Myt record exists in db, then just link the room to the myt and return

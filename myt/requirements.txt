@@ -1,5 +1,7 @@
+aiohttp==3.8.1
 asgiref==3.3.4
 beautifulsoup4==4.10.0
+celery==5.2.7
 channels==3.0.4
 channels-redis==3.3.1
 charset-normalizer==2.0.9

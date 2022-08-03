@@ -4,11 +4,11 @@ import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from
 import { CdkDragDrop, copyArrayItem, transferArrayItem } from '@angular/cdk/drag-drop';
 
 import { Observable, of } from 'rxjs';
-import { catchError, filter, map } from 'rxjs/operators';
+import { catchError, filter, map, tap } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
 import { environment } from '../../../environments/environment';
-import { Myt, MytCard, MytMessage } from '../models/myt.models';
+import { Myt, MytCard, MytMessage, WsMessage } from '../models/myt.models';
 import { defaultMytCard } from '../core/myt.constants';
 
 export const WS_ENDPOINT = environment.wsEndpoint;
@@ -75,8 +75,9 @@ export class MytDataService {
 })
 export class MytMessageService {
   public mytMessages: Observable<MytMessage>;
-  public connectionNumbers: Observable<number>;
-  public announcements: Observable<string>;
+  public connectionNumbers: Observable<WsMessage>;
+  public announcements: Observable<WsMessage>;
+  public errorMessages: Observable<WsMessage>;
 
   constructor(private wsService: WebSocketService) {}
 
@@ -90,12 +91,16 @@ export class MytMessageService {
       filter(msg => (msg as MytMessage).name !== undefined)
     );
 
+    this.errorMessages = messages.pipe(
+      filter(msg => (msg as WsMessage).type === 'error')
+    );
+
     this.connectionNumbers = messages.pipe(
-      filter(msg => typeof msg === 'number')
+      filter(msg => (msg as WsMessage).type === 'ping')
     );
 
     this.announcements = messages.pipe(
-      filter(msg => typeof msg === 'string')
+      filter(msg => (msg as WsMessage).type === 'announcement')
     );
   }
 
