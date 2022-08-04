@@ -1,5 +1,6 @@
 
 <div class="wheel-wrapper" (window:resize)="onResize($event)">
+  <H4>Lost Ark QUALITY sim.</H4>
   <div class="card">
     <span class="quality-text" [ngStyle]="getNumberStyle()">
       {{ number }}
@@ -13,6 +14,8 @@
   </button>
   <div class="disclaimer">
     <small>브라우저의 random 함수 사용, 실제 인게임과 다를수 있음</small>
+    <br/>
+    <small>Using browser's random function, it may differ from actual in-game</small>
   </div>
   <div style="display: none">
     <input type="number" step="0.1" [(ngModel)]="angleTest" (ngModelChange)="setCanvasManually()" />
