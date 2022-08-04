@@ -8,10 +8,11 @@ from myt.home.utils import CharacterNotFoundError, scrape_character_info_dict, s
 
 logger = logging.getLogger(__name__)
 
+
 # user request fetching a myt info
 @shared_task
 def scrape_character_info_and_send_result(group_name, channel_name, message):
-    logger.info(f'celery - {group_name}: {message}')
+    logger.info(f'celery start - {group_name}: {message}')
     channel_layer = get_channel_layer()
 
     try:
@@ -22,6 +23,7 @@ def scrape_character_info_and_send_result(group_name, channel_name, message):
         message_type = 'error_message'
         message = 'character not found'
 
+    logger.info(f'celery result - {group_name}: {message}')
     async_to_sync(channel_layer.group_send)(
         group_name,
         {
