@@ -137,7 +137,7 @@ class MytConsumer(AsyncWebsocketConsumer):
                         result_message['value'] = myt_dict
                     except Myt.DoesNotExist:
                         await sync_to_async(scrape_character_info_and_send_result.delay)(
-                            self.room.id, self.group_name, self.channel_name, result_message
+                            self.group_name, self.channel_name, result_message
                         )
                         return None
                 else:
