@@ -27,7 +27,7 @@ def save_updated_myts(myt_dicts):
                 continue
             character = myt_dict['character']
             level = myt_dict['level']
-            logger.info(f'{character}: {level}')
+            logger.info(f'cron updating {character}: {level}')
             Myt.objects.filter(character=character).update(level=level)
 
 
@@ -51,7 +51,9 @@ async def fetch_and_update_myts():
 
 def update_myts_info():
     logger.info("updating myts cron start")
-    asyncio.run(fetch_and_update_myts())
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(fetch_and_update_myts())
+    loop.close()
     logger.info("updating myts cron end")
 
 # def update_myts_info():
