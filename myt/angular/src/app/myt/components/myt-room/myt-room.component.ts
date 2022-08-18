@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Title, Meta } from '@angular/platform-browser';
 import { rippleColor } from '../../core/myt.constants';
 import { MytDataService } from '../../services/myt.service';
 
@@ -10,13 +11,21 @@ import { Router } from '@angular/router';
   styleUrls: ['./myt-room.component.scss']
 })
 export class MytRoomComponent implements OnInit {
+  title = '로스트아크 군단장 파티 플래너';
   rippleColor: string = rippleColor
   loading: boolean = false
   roomName: string = ''
 
-  constructor(private dataService: MytDataService, private router: Router) { }
+  constructor(private dataService: MytDataService,
+              private router: Router,
+              private titleService: Title,
+              private metaTagService: Meta) { }
 
   ngOnInit(): void {
+    this.titleService.setTitle(this.title);
+    this.metaTagService.updateTag(
+      { name: 'description', content: '로스트아크 군단장 파티 플래너'}
+    )
   }
 
   addRoom(): void {

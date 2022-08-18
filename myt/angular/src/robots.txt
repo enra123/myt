@@ -1,0 +1,3 @@
+User-agent: *
+Disallow:
+Sitemap: https://malange.me/sitemap.xml

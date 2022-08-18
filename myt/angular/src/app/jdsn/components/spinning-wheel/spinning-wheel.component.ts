@@ -1,4 +1,5 @@
-import {Component, ElementRef, AfterViewInit, ViewChild, HostListener } from '@angular/core';
+import { Component, ElementRef, AfterViewInit, ViewChild, HostListener } from '@angular/core';
+import { Title, Meta } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-spinning-wheel',
@@ -8,6 +9,7 @@ import {Component, ElementRef, AfterViewInit, ViewChild, HostListener } from '@a
 export class SpinningWheelComponent implements AfterViewInit {
   @ViewChild('myCanvas', { static: true })
   canvas: ElementRef<HTMLCanvasElement>;
+  title = 'Lost Ark QUALITY simulator';
   public ctx: CanvasRenderingContext2D
   public TOTALFRAME: number = 120
   public FRICTION: number = 0.97
@@ -25,7 +27,8 @@ export class SpinningWheelComponent implements AfterViewInit {
   private fpsInterval = 1000 / 60
   private hueRatioFactor = 2.9 // 3.6 for complete hue cycle 0 ~ 360
 
-  constructor() {
+  constructor(private titleService: Title,
+              private metaTagService: Meta) {
     // Values from Lost Ark official data
     this.probabilitiesCumulative = [
       0,
@@ -214,6 +217,10 @@ export class SpinningWheelComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
+    this.titleService.setTitle(this.title);
+    this.metaTagService.updateTag(
+      { name: 'description', content: 'Lost Ark quality simulator, 로스트아크 품질작'}
+    )
     const ctx = this.canvas.nativeElement.getContext('2d')
     if (!ctx || !(ctx instanceof CanvasRenderingContext2D)) {
         throw new Error('Failed to get 2D context');

@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, Renderer2, ViewChild} from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CdkDragDrop, CdkDragExit, CdkDragEnter } from '@angular/cdk/drag-drop';
 import { NgxMasonryComponent, NgxMasonryOptions } from 'ngx-masonry';

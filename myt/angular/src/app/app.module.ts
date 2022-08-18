@@ -5,11 +5,13 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { TempComponent } from './shared/temp/temp.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
+    TempComponent,
   ],
   imports: [
     AppRoutingModule,
