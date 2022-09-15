@@ -12,11 +12,6 @@
   <button class="btn btn-default btn-just-icon" (click)="spin()">
     <mat-icon>refresh</mat-icon>
   </button>
-  <div class="disclaimer">
-    <small>브라우저의 random 함수 사용, 실제 인게임과 다를수 있음</small>
-    <br/>
-    <small>Using browser's random function, it may differ from actual in-game</small>
-  </div>
   <div style="display: none">
     <input type="number" step="0.1" [(ngModel)]="angleTest" (ngModelChange)="setCanvasManually()" />
   </div>
