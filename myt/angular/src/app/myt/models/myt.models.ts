@@ -12,6 +12,7 @@ export interface MytCard {
   day: string;
   difficulty: string;
   times: number[];
+  pinned: boolean;
   myts: Myt[];
 }
 

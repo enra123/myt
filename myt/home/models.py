@@ -37,6 +37,7 @@ class MytCard(models.Model):
     day = models.CharField(max_length=10)
     difficulty = models.CharField(max_length=10)
     times = JSONField()
+    pinned = models.BooleanField(default=False)
     myts = models.ManyToManyField(Myt, blank=True)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     updated_at = models.DateTimeField(auto_now=True)

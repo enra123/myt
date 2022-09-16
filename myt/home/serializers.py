@@ -18,8 +18,8 @@ class MytCardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MytCard
-        fields = ('name', 'legion', 'day', 'difficulty', 'times', 'myts')
-        read_only_fields = ('name', 'legion', 'day', 'difficulty', 'times')
+        fields = ('name', 'legion', 'day', 'difficulty', 'times', 'pinned', 'myts')
+        read_only_fields = ('name', 'legion', 'day', 'difficulty', 'times', 'pinned')
 
 
 class RoomSerializer(serializers.ModelSerializer):

@@ -47,6 +47,7 @@ def create_myt_card(room, myt_card_dict, myt_characters):
                        day=myt_card_dict['day'],
                        difficulty=myt_card_dict['difficulty'],
                        times=myt_card_dict['times'],
+                       pinned=myt_card_dict['pinned'],
                        room=room)
     myt_card.save()
     myt_card.myts.add(*myts)

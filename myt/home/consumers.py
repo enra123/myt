@@ -140,7 +140,7 @@ class MytConsumer(AsyncWebsocketConsumer):
                             self.group_name, self.channel_name, result_message
                         )
                         return None
-                else:
+                elif target == 'mytCards':
                     myt_characters = [myt['character'] for myt in value.get('myts', [])]
                     myt_card = await database_sync_to_async(create_myt_card)(
                         self.room, value, myt_characters

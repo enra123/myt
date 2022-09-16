@@ -72,5 +72,6 @@ export const defaultMytCard = {
   day: '수',
   difficulty: '노',
   times: [18, 18],
+  pinned: false,
   myts: []
 } as MytCard

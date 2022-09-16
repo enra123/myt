@@ -122,6 +122,11 @@ export class MytCardComponent implements OnInit {
     return 'custom'
   }
 
+  pinUnpinCardOnClick(): void {
+    this.mytCard.pinned = !this.mytCard.pinned
+    this.cardValueOnChange('pinned', this.mytCard.pinned);
+  }
+
   changeLegion(direction: number): void {
     this.legionIndexSelected = this.legionIndexSelected + direction;
     if (this.legionIndexSelected < 0) {

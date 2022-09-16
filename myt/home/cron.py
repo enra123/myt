@@ -9,11 +9,12 @@ if __name__ == "__main__":
 import logging
 import aiohttp
 import asyncio
+import datetime
 from channels.db import database_sync_to_async
 
 from django.db import transaction
 
-from myt.home.models import Myt, Announcement
+from myt.home.models import Myt, MytCard, Announcement
 from myt.home.utils import scrape_character_info_dict_batch, CharacterNotFoundError
 
 logger = logging.getLogger(__name__)
@@ -56,22 +57,22 @@ def update_myts_info():
     loop.close()
     logger.info("updating myts cron end")
 
-# def update_myts_info():
-#     logger.info("updating myts cron start")
-#     myts = Myt.objects.all()
-#
-#     for myt in myts:
-#         try:
-#             updated_info_dict = scrape_character_info_dict(myt.character)
-#         except CharacterNotFoundError:
-#             continue
-#         level = updated_info_dict.get('level', myt.level)
-#         if level != myt.level:
-#             logger.info(f'{myt.character}: {myt.level}')
-#             myt.level = level
-#             myt.save()
-#
-#     logger.info("updating myts cron end")
+
+def clear_unpinned_myt_cards_day_before():
+    logger.info("clearing unpinned myt cards")
+    weekday_num_kr_dict = {
+        0: '월',
+        1: '화',
+        2: '수',
+        3: '목',
+        4: '금',
+        5: '토',
+        6: '일'
+    }
+    # utc 20:20(scheduled cron time) day is the previous day of kr
+    weekday_num = datetime.datetime.today().weekday()
+    MytCard.objects.filter(pinned=False, day=weekday_num_kr_dict[weekday_num]).delete()
+    logger.info("cleared unpinned myt cards")
 
 
 def clear_announcements():
