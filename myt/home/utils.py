@@ -118,7 +118,7 @@ def scrape_character_info_dict(character_name):
 
 
 # cronjob batch-updating myts in db async
-async def scrape_character_info_dict_batch(character_name, session):
+async def scrape_character_info_dict_async(character_name, session):
     async with session.get(settings.LOSTARK_PROFILE_URL + character_name) as response:
         characters, level, role = await sync_to_async(extract_character_info)(await response.text())
 

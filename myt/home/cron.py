@@ -12,24 +12,21 @@ import asyncio
 import datetime
 from channels.db import database_sync_to_async
 
-from django.db import transaction
-
 from myt.home.models import Myt, MytCard, Announcement
-from myt.home.utils import scrape_character_info_dict_batch, CharacterNotFoundError
+from myt.home.utils import scrape_character_info_dict_async, CharacterNotFoundError
 
 logger = logging.getLogger(__name__)
 
 
 @database_sync_to_async
 def save_updated_myts(myt_dicts):
-    with transaction.atomic():
-        for myt_dict in myt_dicts:
-            if isinstance(myt_dict, CharacterNotFoundError):
-                continue
-            character = myt_dict['character']
-            level = myt_dict['level']
-            logger.info(f'cron updating {character}: {level}')
-            Myt.objects.filter(character=character).update(level=level)
+    for myt_dict in myt_dicts:
+        if isinstance(myt_dict, CharacterNotFoundError):
+            continue
+        character = myt_dict['character']
+        level = myt_dict['level']
+        logger.info(f'cron updating {character}: {level}')
+        Myt.objects.filter(character=character).update(level=level)
 
 
 @database_sync_to_async
@@ -44,7 +41,7 @@ async def fetch_and_update_myts():
 
     myt_dicts = []
     async with aiohttp.ClientSession() as session:
-        tasks = [(scrape_character_info_dict_batch(character, session)) for character in characters]
+        tasks = [(scrape_character_info_dict_async(character, session)) for character in characters]
         myt_dicts.extend(await asyncio.gather(*tasks, return_exceptions=True))
 
     await save_updated_myts(myt_dicts)
