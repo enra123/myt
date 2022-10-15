@@ -36,6 +36,7 @@ class MytCard(models.Model):
     legion = models.CharField(max_length=50)
     day = models.CharField(max_length=10)
     difficulty = models.CharField(max_length=10)
+    message = models.CharField(max_length=50, null=True)
     times = JSONField()
     pinned = models.BooleanField(default=False)
     myts = models.ManyToManyField(Myt, blank=True)

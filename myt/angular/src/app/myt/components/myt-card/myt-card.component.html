@@ -5,11 +5,12 @@
   </button>
 
   <div class="card-header card-header-icon">
-    <div class="card-icon legion-icon" [ngClass]="selectedLegionClass()">
-      <div [hidden]="legionIndexSelected!=legions.length" class="custom-legion-container">
-        <input type="text" name="clegion" maxlength="3" class="form-control" #legionInput>
-      </div>
+    <div class="card-icon legion-icon" [ngClass]="this.mytCard.legion">
       <mat-icon (click)="changeLegion(-1)">navigate_before</mat-icon>
+      <div class="message-container">
+        <textarea name="message" maxlength="30" class="form-control" placeholder="숙련팟" #messageInput></textarea>
+        <mat-icon>edit</mat-icon>
+      </div>
       <mat-icon (click)="changeLegion(1)">navigate_next</mat-icon>
     </div>
 

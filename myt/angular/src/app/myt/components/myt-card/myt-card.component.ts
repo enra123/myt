@@ -17,10 +17,10 @@ import { MytDragDropService, MytMessageService } from '../../services/myt.servic
 })
 export class MytCardComponent implements OnInit {
   @Input() mytCard: MytCard
-  @ViewChild('legionInput', {static: true})
-  legionInput: ElementRef
+  @ViewChild('messageInput', {static: true})
+  messageInput: ElementRef
   legions: string[] = legions
-  oldLegion = ''
+  oldMessage = ''
   customLegionChange = new Subject<string>()
   debounceDueTime = 1000
   legionIndexSelected = 0
@@ -33,38 +33,35 @@ export class MytCardComponent implements OnInit {
 
   ngOnInit(): void {
     this.setTimeSliderMarksDefault()
-    this.updateSelectedLegionProperties()
+    this.updateMessageDisplay()
 
     // ngModelOnChange not working as expected with korean input (not detecting character in 'building')
-    // thus, natively binding keyup event of the input el and watching it changing with debounce time
-    fromEvent(this.legionInput.nativeElement, 'keyup').pipe(
+    // thus, natively binding keyup event of the textarea el and watching it changing with debounce time
+    fromEvent(this.messageInput.nativeElement, 'keyup').pipe(
       filter(Boolean),
       debounceTime(this.debounceDueTime),
       distinctUntilChanged()
     ).subscribe(e => {
-      this.mytCard.legion = this.legionInput.nativeElement.value
-      this.cardValueOnChange('legion', this.mytCard.legion)
+      this.mytCard.message = this.messageInput.nativeElement.value
+      this.cardValueOnChange('message', this.mytCard.message)
     });
   }
 
-  // tslint:disable-next-line:use-lifecycle-interface
   ngDoCheck() {
-    this.updateSelectedLegionProperties()
+    this.updateMessageDisplay()
   }
 
   onDrop(event: CdkDragDrop<Myt[]>) {
     this.mytDragDropService.onDrop(event)
   }
 
-  protected updateSelectedLegionProperties() {
-    if (this.oldLegion === this.mytCard.legion) { return }
+  // this.mytCard.message ngModel was not bound to textarea (see the comment in [ngOnInit])
+  // Manually checking it and updating it every ng cycle
+  protected updateMessageDisplay() {
+    if (this.oldMessage === this.mytCard.message) { return }
 
-    this.legionIndexSelected = this.legions.indexOf(this.mytCard.legion)
-    if (this.legionIndexSelected < 0) {
-      this.legionIndexSelected = this.legions.length
-      this.legionInput.nativeElement.value = this.mytCard.legion
-    }
-    this.oldLegion = this.mytCard.legion
+    this.messageInput.nativeElement.value = this.mytCard.message
+    this.oldMessage = this.mytCard.message
   }
 
   protected setTimeSliderMarksDefault() {
@@ -115,13 +112,6 @@ export class MytCardComponent implements OnInit {
     return value + ':00';
   }
 
-  selectedLegionClass(): string {
-    if (this.legions.includes(this.mytCard.legion)) {
-      return this.mytCard.legion
-    }
-    return 'custom'
-  }
-
   pinUnpinCardOnClick(): void {
     this.mytCard.pinned = !this.mytCard.pinned
     this.cardValueOnChange('pinned', this.mytCard.pinned);
@@ -129,17 +119,14 @@ export class MytCardComponent implements OnInit {
 
   changeLegion(direction: number): void {
     this.legionIndexSelected = this.legionIndexSelected + direction;
+    console.log(this.legionIndexSelected)
     if (this.legionIndexSelected < 0) {
-      this.legionIndexSelected = this.legions.length;
-      this.mytCard.legion = this.legionInput.nativeElement.value
-    } else if (this.legionIndexSelected > this.legions.length) {
-      this.legionIndexSelected = 0;
+      this.legionIndexSelected = this.legions.length - 1
+    } else if (this.legionIndexSelected >= this.legions.length) {
+      this.legionIndexSelected = 0
     }
-    if (this.legionIndexSelected === this.legions.length) {
-      this.mytCard.legion = this.legionInput.nativeElement.value
-    } else {
-      this.mytCard.legion = this.legions[this.legionIndexSelected];
-    }
+    this.mytCard.legion = this.legions[this.legionIndexSelected]
+
     this.cardValueOnChange('legion', this.mytCard.legion);
   }
 

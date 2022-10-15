@@ -1,8 +1,8 @@
 <div class="accord-item-header" (click)="accordionItem.toggle()">
-  <div class="accord-item-header-legion legion-bg" [ngClass]="selectedLegionClass()">
+  <div class="accord-item-header-legion legion-bg" [ngClass]="this.mytCard.legion">
     <div class="overlay"></div>
     <div class="description">
-      <p>{{ mytCard.legion }}</p>
+      <p>{{ mytCard.message }}</p>
       <span>{{ mytCard.difficulty }}</span>
     </div>
   </div>

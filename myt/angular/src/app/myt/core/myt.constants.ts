@@ -18,7 +18,8 @@ export const legions: string[] = [
   'thaemine',
   'brelshaza',
   'vykas',
-  'valtan'
+  'valtan',
+  'custom'
 ]
 export const days: string[] = [
   '수',
@@ -71,6 +72,7 @@ export const defaultMytCard = {
   legion: 'kakul-saydon',
   day: '수',
   difficulty: '노',
+  message: '',
   times: [18, 18],
   pinned: false,
   myts: []

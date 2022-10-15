@@ -43,8 +43,14 @@
   .description {
     position: relative;
     color: white;
-    line-height: 1.2em;
+    line-height: 1em;
     z-index: 11;
+
+    p {
+      max-height: 3em;
+      overflow: hidden;
+      margin-bottom: 0;
+    }
 
     span {
       font-weight: bold;

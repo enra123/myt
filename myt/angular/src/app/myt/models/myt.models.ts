@@ -11,6 +11,7 @@ export interface MytCard {
   legion: string;
   day: string;
   difficulty: string;
+  message: string;
   times: number[];
   pinned: boolean;
   myts: Myt[];

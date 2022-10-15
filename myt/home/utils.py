@@ -46,6 +46,7 @@ def create_myt_card(room, myt_card_dict, myt_characters):
     myt_card = MytCard(legion=myt_card_dict['legion'],
                        day=myt_card_dict['day'],
                        difficulty=myt_card_dict['difficulty'],
+                       message=myt_card_dict['message'],
                        times=myt_card_dict['times'],
                        pinned=myt_card_dict['pinned'],
                        room=room)

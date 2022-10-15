@@ -153,7 +153,7 @@ export class MytDashboardComponent implements OnInit {
           this.deleteCardByName(message.value);
         }
       }
-    } else {
+    } else if (msgType === 'card') {
       const mytCardIndex = this.mytCards.findIndex((card => card.name === message.name));
       if (mytCardIndex === -1) {
         return;
@@ -169,7 +169,7 @@ export class MytDashboardComponent implements OnInit {
             myt => myt.character !== message.value.character
           )
         }
-      } else {
+      } else { // editing myt-card flat values, e.g. legion, difficulty, message
         // @ts-ignore
         mytCard[message.target] = message.value;
       }
