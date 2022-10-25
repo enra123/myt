@@ -26,7 +26,11 @@ export interface MytMessage {
 
 export interface WsMessage {
   type: string;
-  content: string;
+  content: any;
+}
+
+export interface MytRoom {
+  name: string;
 }
 
 

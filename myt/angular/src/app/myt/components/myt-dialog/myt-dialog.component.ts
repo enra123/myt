@@ -18,8 +18,8 @@ export class MytDialogComponent {
   }
 
   submitAnnouncement(): void {
-    if (!this.announcement) return
-    this.mytMessageService.sendAnnouncement(this.announcement)
+    if (!this.announcement) { return }
+    this.mytMessageService.sendMessage('announcement', this.announcement)
     this.announcement = ''
   }
 }

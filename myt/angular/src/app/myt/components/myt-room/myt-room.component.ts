@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 import { rippleColor } from '../../core/myt.constants';
 import { MytDataService } from '../../services/myt.service';
-
+import { MytRoom } from '../../models/myt.models';
 import { Router } from '@angular/router';
 
 @Component({
@@ -34,7 +34,7 @@ export class MytRoomComponent implements OnInit {
 
     this.dataService.addRoom(this.roomName)
       .subscribe({
-        next: (result: any) => {
+        next: (result: MytRoom) => {
           this.router.navigateByUrl('/myt/' + result.name)
         },
         error: () => {

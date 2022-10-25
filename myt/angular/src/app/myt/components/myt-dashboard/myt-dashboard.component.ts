@@ -5,7 +5,7 @@ import { NgxMasonryComponent, NgxMasonryOptions } from 'ngx-masonry';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
-import { first, switchMap } from 'rxjs/operators';
+import { first, concatMap } from 'rxjs/operators';
 
 import { Myt, MytCard, MytMessage } from '../../models/myt.models';
 import { badgeColors, rippleColor, defaultMytCard, defaultMyt } from '../../core/myt.constants';
@@ -57,19 +57,19 @@ export class MytDashboardComponent implements OnInit {
 
       mytMessageService.errorMessages.subscribe(
           msg => {
-            this.openErrorBar(msg.content)
+            this.openErrorBar(msg)
             this.loading = false
           },
           err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
         );
 
       mytMessageService.connectionNumbers.subscribe(
-          msg => this.connectedUserNum = msg.content,
+          msg => this.connectedUserNum = msg,
           err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
         );
 
       mytMessageService.announcements.subscribe(
-          msg => this.updateAnnouncement(msg.content),
+          msg => this.updateAnnouncement(msg),
           err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
         );
     });
@@ -84,12 +84,12 @@ export class MytDashboardComponent implements OnInit {
     this.loading = true;
     this.loadingNewCard = true;
     this.dataService.getMyts(this.roomName).pipe(
-      switchMap(myts => {
+      concatMap(myts => {
         this.myts = myts;
         this.setMytsColors(this.myts);
         return this.dataService.getAnnouncements(this.roomName);
       }),
-      switchMap(announcements => {
+      concatMap(announcements => {
         if (announcements.length) {
           this.openAnnounceBar(announcements[0]);
         }
@@ -272,7 +272,7 @@ export class MytDashboardComponent implements OnInit {
     //     complete: () => this.loading = false
     //   });
 
-    this.mytMessageService.sendMessage({
+    this.mytMessageService.sendMessage('myt', {
       name: 'source',
       action: 'add',
       target: 'myts',
@@ -282,7 +282,7 @@ export class MytDashboardComponent implements OnInit {
 
   deleteCardOnClick(mytCard: MytCard): void {
     this.deleteCardByName(mytCard.name);
-    this.mytMessageService.sendMessage({
+    this.mytMessageService.sendMessage('myt', {
       name: 'source',
       action: 'delete',
       target: 'mytCards',

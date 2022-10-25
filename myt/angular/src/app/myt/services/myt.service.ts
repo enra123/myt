@@ -8,7 +8,7 @@ import { catchError, filter, map, tap } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
 import { environment } from '../../../environments/environment';
-import { Myt, MytCard, MytMessage, WsMessage } from '../models/myt.models';
+import { Myt, MytCard, MytMessage, WsMessage, MytRoom } from '../models/myt.models';
 import { defaultMytCard } from '../core/myt.constants';
 
 export const WS_ENDPOINT = environment.wsEndpoint;
@@ -32,7 +32,7 @@ export class WebSocketService {
     return this.ws;
   }
 
-  sendMessage(msg: any) {
+  sendMessage(msg: WsMessage) {
     this.ws.next(msg);
   }
 }
@@ -49,8 +49,8 @@ export class MytDataService {
     return this.http.get<string>(this.apiUrl + 'room/' + roomName)
   }
 
-  addRoom(roomName: string): Observable<string> {
-    return this.http.post<any>(this.apiUrl + 'room/', {name: roomName})
+  addRoom(roomName: string): Observable<MytRoom> {
+    return this.http.post<MytRoom>(this.apiUrl + 'room/', {name: roomName})
   }
 
   getAnnouncements(roomName: string): Observable<string[]> {
@@ -75,41 +75,36 @@ export class MytDataService {
 })
 export class MytMessageService {
   public mytMessages: Observable<MytMessage>;
-  public connectionNumbers: Observable<WsMessage>;
-  public announcements: Observable<WsMessage>;
-  public errorMessages: Observable<WsMessage>;
+  public connectionNumbers: Observable<string>;
+  public announcements: Observable<string>;
+  public errorMessages: Observable<string>;
 
   constructor(private wsService: WebSocketService) {}
 
+  private filterObservableByType<T>(messages: Observable<WsMessage>, type: string): Observable<T> {
+    return messages.pipe(
+      filter(msg => msg.type === type),
+      map(msg => msg.content as T)
+    );
+  }
+
   connect(roomName: string) {
     const messages = this.wsService.connect(WS_ENDPOINT + roomName).pipe(
-      map(response => response.message),
+      map(response => response.message as WsMessage),
       catchError(err => {throw err})
     );
 
-    this.mytMessages = messages.pipe(
-      filter(msg => (msg as MytMessage).name !== undefined)
-    );
-
-    this.errorMessages = messages.pipe(
-      filter(msg => (msg as WsMessage).type === 'error')
-    );
-
-    this.connectionNumbers = messages.pipe(
-      filter(msg => (msg as WsMessage).type === 'ping')
-    );
-
-    this.announcements = messages.pipe(
-      filter(msg => (msg as WsMessage).type === 'announcement')
-    );
+    this.mytMessages = this.filterObservableByType<MytMessage>(messages, 'myt')
+    this.errorMessages = this.filterObservableByType<string>(messages, 'error')
+    this.connectionNumbers = this.filterObservableByType<string>(messages, 'ping')
+    this.announcements = this.filterObservableByType<string>(messages, 'announcement')
   }
 
-  sendMessage(message: MytMessage) {
-    this.wsService.sendMessage(message);
-  }
-
-  sendAnnouncement(announcement: string) {
-    this.wsService.sendMessage(announcement);
+  sendMessage(type: string, message: any) {
+    this.wsService.sendMessage({
+      type,
+      content: message,
+    });
   }
 }
 
@@ -120,7 +115,7 @@ export class MytDragDropService {
   constructor(private mytMessageService: MytMessageService) {}
 
   private getMytDragDropPreviousIndex(event: CdkDragDrop<Myt[]>) {
-    // TODO: find the reasoon and fix this dirty work around
+    // TODO: find the reason and fix this dirty work around
     // 'event.previousIndex' was meant to work but it's not giving the correct index
     // thus, manually getting the right 'previousIndex'
     const droppedMytText = event.item.element.nativeElement.innerText.split('\n').pop();
@@ -207,7 +202,7 @@ export class MytDragDropService {
         break
     }
     mytMessages.forEach(msg => {
-      this.mytMessageService.sendMessage(msg)
+      this.mytMessageService.sendMessage('myt', msg)
     })
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable, NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { TempComponent } from './shared/temp/temp.component';
+import { HomeComponent } from './shared/home/home.component';
 
 
 const routes: Routes = [
@@ -12,7 +12,7 @@ const routes: Routes = [
     path: 'jdsn',
     loadChildren: () => import('./jdsn/jdsn.module').then(m => m.JdsnModule)
   },
-  { path: '', component: TempComponent, pathMatch: 'full' },
+  { path: '', component: HomeComponent, pathMatch: 'full' },
   { path: '**', redirectTo: '' }
 ];
 

@@ -100,7 +100,7 @@ export class MytCardComponent implements OnInit {
   }
 
   protected cardValueOnChange(target: string, value: any) {
-    this.mytMessageService.sendMessage({
+    this.mytMessageService.sendMessage('myt', {
       name: this.mytCard.name,
       action: 'edit',
       target,
@@ -119,7 +119,6 @@ export class MytCardComponent implements OnInit {
 
   changeLegion(direction: number): void {
     this.legionIndexSelected = this.legionIndexSelected + direction;
-    console.log(this.legionIndexSelected)
     if (this.legionIndexSelected < 0) {
       this.legionIndexSelected = this.legions.length - 1
     } else if (this.legionIndexSelected >= this.legions.length) {

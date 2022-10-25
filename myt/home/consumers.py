@@ -29,8 +29,8 @@ class MytConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             self.group_name,
             {
-                'type': 'ping_message',
-                'message': str(count),
+                'type': 'ping',
+                'content': str(count),
                 'sender_channel_name': self.channel_name
             }
         )
@@ -40,8 +40,8 @@ class MytConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             self.group_name,
             {
-                'type': 'ping_message',
-                'message': count,
+                'type': 'ping',
+                'content': count,
                 'sender_channel_name': self.channel_name
             }
         )
@@ -55,40 +55,44 @@ class MytConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         logger.info(f'{self.group_name}: {text_data}')
         message = json.loads(text_data)
-        message_type = 'announcement' if isinstance(message, str) else 'myt_message'
+        message_type = message.get('type', 'error')
+        message_content = message.get('content')
 
         try:
             if message_type == 'announcement':
-                await database_sync_to_async(append_announcement)(self.room, message)
-            else:
-                message = await self.process_myt_message(message)
+                await database_sync_to_async(append_announcement)(self.room, message_content)
+            elif message_type == 'myt':
+                message_content = await self.process_myt_message(message_content)
         except Exception as e:
             logger.info(e)
-            message_type = 'error_message'
-            message = 'server error processing the request'
+            message_type = 'error'
+            message_content = 'server error processing the request'
 
-        if message:
+        if message_content:
             # Send message to room group
             await self.channel_layer.group_send(
                 self.group_name,
                 {
                     'type': message_type,
-                    'message': message,
+                    'content': message_content,
                     'sender_channel_name': self.channel_name
                 }
             )
 
     # Send message to WebSocket
-    async def myt_message(self, event):
-        message = event['message']
+    async def myt(self, event):
+        message = {
+            'type': 'myt',
+            'content': event['content']
+        }
 
         await self.send(text_data=json.dumps({'message': message}))
 
     # Send message to WebSocket
-    async def error_message(self, event):
+    async def error(self, event):
         message = {
             'type': 'error',
-            'content': event['message']
+            'content': event['content']
         }
 
         # send only to the sender
@@ -96,10 +100,10 @@ class MytConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({'message': message}))
 
     # Send message to WebSocket
-    async def ping_message(self, event):
+    async def ping(self, event):
         message = {
             'type': 'ping',
-            'content': event['message']
+            'content': event['content']
         }
 
         await self.send(text_data=json.dumps({'message': message}))
@@ -108,7 +112,7 @@ class MytConsumer(AsyncWebsocketConsumer):
     async def announcement(self, event):
         message = {
             'type': 'announcement',
-            'content': event['message']
+            'content': event['content']
         }
 
         await self.send(text_data=json.dumps({'message': message}))
