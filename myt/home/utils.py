@@ -1,4 +1,5 @@
 import requests
+from requests.exceptions import ConnectTimeout
 
 from asgiref.sync import sync_to_async
 from bs4 import BeautifulSoup
@@ -10,6 +11,10 @@ from myt.home.serializers import MytSerializer
 
 
 class CharacterNotFoundError(Exception):
+    pass
+
+
+class LostArkProfileConnectionTimeout(Exception):
     pass
 
 
@@ -77,8 +82,8 @@ def get_myt_account_num_by_characters(characters):
     if myts:  # existing account
         return myts.first().account
     else:  # new account num is last account + 1 or 1 as the first account going in
-        max_account_num = Myt.objects.aggregate(max_account_num=Max('account'))\
-                                     .get('max_account_num')
+        max_account_num = Myt.objects.aggregate(max_account_num=Max('account')) \
+            .get('max_account_num')
         if max_account_num:
             return max_account_num + 1
         else:
@@ -106,7 +111,10 @@ def extract_character_info(html):
 
 def scrape_character_info_dict(character_name):
     url = settings.LOSTARK_PROFILE_URL + character_name
-    response = requests.get(url)
+    try:
+        response = requests.get(url, timeout=10)
+    except ConnectTimeout:
+        raise LostArkProfileConnectionTimeout('timeout, try later')
     characters, level, role = extract_character_info(response.content)
     account = get_myt_account_num_by_characters(characters)
 
