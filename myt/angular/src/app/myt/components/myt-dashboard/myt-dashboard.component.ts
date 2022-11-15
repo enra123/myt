@@ -5,7 +5,8 @@ import { NgxMasonryComponent, NgxMasonryOptions } from 'ngx-masonry';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
-import { first, concatMap } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { first, concatMap, takeUntil } from 'rxjs/operators';
 
 import { Myt, MytCard, MytMessage } from '../../models/myt.models';
 import { badgeColors, rippleColor, defaultMytCard, defaultMyt } from '../../core/myt.constants';
@@ -20,6 +21,7 @@ import { MytDialogComponent } from '../myt-dialog/myt-dialog.component';
 })
 export class MytDashboardComponent implements OnInit {
   @ViewChild(NgxMasonryComponent) masonry: NgxMasonryComponent | undefined;
+  private componentDestroyed = new Subject<void>();
   ANNOUNCEMENT_MAX_SIZE = 5;
   rippleColor: string = rippleColor;
   btnClass = '';
@@ -50,12 +52,16 @@ export class MytDashboardComponent implements OnInit {
     this.route.params.pipe(first()).subscribe( (params) => {
       this.roomName = params.roomName;
       mytMessageService.connect(this.roomName);
-      mytMessageService.mytMessages.subscribe(
+      mytMessageService.mytMessages
+        .pipe(takeUntil(this.componentDestroyed))
+        .subscribe(
           msg => this.processMytMessage(msg),
           err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
         );
 
-      mytMessageService.errorMessages.subscribe(
+      mytMessageService.errorMessages
+        .pipe(takeUntil(this.componentDestroyed))
+        .subscribe(
           msg => {
             this.openErrorBar(msg)
             this.loading = false
@@ -63,12 +69,16 @@ export class MytDashboardComponent implements OnInit {
           err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
         );
 
-      mytMessageService.connectionNumbers.subscribe(
+      mytMessageService.connectionNumbers
+        .pipe(takeUntil(this.componentDestroyed))
+        .subscribe(
           msg => this.connectedUserNum = msg,
           err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
         );
 
-      mytMessageService.announcements.subscribe(
+      mytMessageService.announcements
+        .pipe(takeUntil(this.componentDestroyed))
+        .subscribe(
           msg => this.updateAnnouncement(msg),
           err => this.openErrorBar('실시간 연동 오류. 새로고침해주세요')
         );
@@ -78,6 +88,11 @@ export class MytDashboardComponent implements OnInit {
 
   ngOnInit() {
     this.fetchData();
+  }
+
+  ngOnDestroy() {
+    this.componentDestroyed.next()
+    this.componentDestroyed.complete()
   }
 
   private fetchData() {
