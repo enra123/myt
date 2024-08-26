@@ -1,3 +1,5 @@
+Angular client side and Python(Django) server side
+
 # myt
 https://malange.me/myt/
 Lost Ark(KR server) party matching planner for groups/guilds
