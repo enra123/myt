@@ -1,7 +1,10 @@
 Angular SPA client side and Python(Django) server side
-Websocket based real-time communication
-Reddis for in-memory data
-Celery and cronjob for updating data
+
+Websocket based real-time async communication
+
+Celery and cronjob to update data
+
+Nginx, daphne, reddis, AWS
 
 Server closed
 # myt
