@@ -1,4 +1,7 @@
-Angular client side and Python(Django) server side
+Angular SPA client side and Python(Django) server side
+Websocket based real-time communication
+Reddis for in-memory data
+Celery and cronjob for updating data
 
 Server closed
 # myt
